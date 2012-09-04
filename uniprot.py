@@ -19,10 +19,9 @@ including the protein sequence.
 """
 
 
-# Doing internet lookups and converting is fraught with
-# error, so a lot of caching to disk is recommended.
-# Here's a couple of helper functions to cache Python
-# dictionary data structures to disk, and back again
+# Doing internet lookups is fraught with error, 
+# so caching to disk is recommended. Here's a
+# couple of helper functions to cache Python dictionaries.
 
 
 def read_dict(fname_dict):
@@ -40,7 +39,8 @@ def cache_dictionary_fn(fn, cache_fname, is_overwrite=False):
   """
   This is a convenience wrapper for lazy evaluation
   of a function that returns a dictionary. If the
-  cache_fname
+  cache_fname exists, the file is read and returned,
+  otherwise the fn() is run.
   """
   if not is_overwrite and os.path.isfile(cache_fname):
     return read_dict(cache_fname)
@@ -96,7 +96,7 @@ def batch_uniprot_id_mapping_pairs(
 
 def sequentially_convert_to_uniprot_id(seqids, fname_dict):
   """
-  This is *the* function to convert an arbitary seqid to a
+  This is the key function to convert an arbitary seqid to a
   uniprot id. It only works for one seqid per url request, so
   it is slow. But if you cannot transform your seqids so that
   batch mapping can work, it is the only option. 
