@@ -43,8 +43,8 @@ Reading seqids from a fasta file:
 
 ## Fetching identifier mappings
 
-If we have a bunch of seqids that cleanly maps to a known 
-type of id recognized by uniprot, we can use batch mode to
+If we have a bunch of sequence identifiers that cleanly maps to a known 
+identifier type recognized by uniprot, we can use batch mode to
 map identifiers in groups of 100 at a time. It's very important
 that the type of the identifiers are specified. These can be
 looked up at <http://www.uniprot.org/faq/28#mapping-faq-table>. 
@@ -69,7 +69,7 @@ as much on disk as possible to avoid lost work.
 
 ## Brute-force matching
 
-If we have a bunch of seqids that can't be recognized by
+If we have a bunch of sequence identifiers that can't be recognized by
 the batch identifier-mapping service of UniProt (happens way more
 often than you'd think), you can use the sequential service
 which is much more forgiving. It does not need a prespecification

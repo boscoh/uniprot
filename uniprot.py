@@ -51,20 +51,20 @@ def cache_dict_fn(dict_fn, cache_fname, is_overwrite=False):
 
 
 
-def fetch_uniprot_id_mapping(fromtype, totype, seqids):
+def fetch_uniprot_id_mapping(from_type, to_type, seqids):
   """
   Converts a set of identifiers.
 
-  fromtype and totype can be obtained from:
-     http://www.uniprot.org/faq/28#id_mapping_examples
+  from_type and to_type can be obtained from:
+    http://www.uniprot.org/faq/28#mapping-faq-table
 
   Returns id mapping as pairs in tab-separated text format.
   """
   base = 'http://www.uniprot.org'
   tool = 'mapping'
   params = {
-    'from': fromtype,
-    'to': totype,
+    'from': from_type,
+    'to': to_type,
     'format': 'tab',
     'query': ' '.join(seqids),
   }
@@ -76,11 +76,14 @@ def fetch_uniprot_id_mapping(fromtype, totype, seqids):
 
 
 def batch_uniprot_id_mapping_pairs(
-    fromtype, totype, seqids, n_batch=100):
+    from_type, to_type, seqids, n_batch=100):
   """
   Converts identifiers using above function, but launches url
   requests in safe batches of 100 seqids at a time.
   
+  from_type and to_type can be obtained from:
+    http://www.uniprot.org/faq/28#mapping-faq-table
+
   Returns a list of matched pairs of identifiers.
   """
   txt = ""
@@ -88,7 +91,7 @@ def batch_uniprot_id_mapping_pairs(
   for i in range(0, n_seqid, n_batch):
     if n_seqid > n_batch:
       print "Looking up %d-%d seqid mappings" % (i, i+n_batch)
-    txt += fetch_uniprot_id_mapping(fromtype, totype, seqids[i:i+n_batch])
+    txt += fetch_uniprot_id_mapping(from_type, to_type, seqids[i:i+n_batch])
   lines = filter(lambda l: 'from' not in l.lower(), txt.splitlines())
   return [l.split('\t')[:2] for l in lines]
 
