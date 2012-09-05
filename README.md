@@ -44,7 +44,7 @@ Reading seqids from a fasta file:
 ## Fetching identifier mappings
 
 If we have a bunch of sequence identifiers that cleanly maps to a known 
-identifier type recognized by uniprot, we can use batch mode to
+identifier type recognized by UniProt, we can use batch mode to
 map identifiers in groups of 100 at a time. It's very important
 that the type of the identifiers are specified. These can be
 looked up at <http://www.uniprot.org/faq/28#mapping-faq-table>. 
@@ -59,13 +59,6 @@ identifiers (ACC):
       'P_REFSEQ_AC', 'ACC', seqids)
 
     pprint.pprint(pairs, indent=2)
-
-Most of the routines require a caching filename as parameter.
-This is because such queries are very temperamental - it
-depends on your network latency, as well as the good graces
-of uniprot.org itself. As such, the functions caches
-as much on disk as possible to avoid lost work.
-
 
 ## Brute-force matching
 
@@ -85,6 +78,13 @@ excruciatingly slow:
         seqids, 'cache.dict')
 
     pprint.pprint(mapping, indent=2)
+
+This function require a caching filename as parameter.
+This is because such queries are very temperamental - it
+depends on your network latency, as well as the good graces
+of uniprot.org itself. As such, the functions caches
+as much on disk as possible to avoid lost work.
+
 
 ## Getting protein sequence metadata
 
