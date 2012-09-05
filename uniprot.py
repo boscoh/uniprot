@@ -35,7 +35,7 @@ def write_dict(a_dict, fname_dict, indent=2):
       stream=open(fname_dict, 'w'))
 
 
-def cache_dictionary_fn(fn, cache_fname, is_overwrite=False):
+def cache_dict_fn(dict_fn, cache_fname, is_overwrite=False):
   """
   This is a convenience wrapper for lazy evaluation
   of a function that returns a dictionary. If the
@@ -45,7 +45,7 @@ def cache_dictionary_fn(fn, cache_fname, is_overwrite=False):
   if not is_overwrite and os.path.isfile(cache_fname):
     return read_dict(cache_fname)
   else:
-    results = fn()
+    results = dict_fn()
     write_dict(results, cache_fname)
     return results
 
@@ -124,7 +124,7 @@ def sequentially_convert_to_uniprot_id(seqids, fname_dict):
 
 
 
-def parse_uniprot_text(uniprot_fname):
+def parse_uniprot_txt_file(uniprot_fname):
   """
   Parses a text file of metadata retrieved from uniprot.org.
 
@@ -239,7 +239,7 @@ def batch_uniprot_metadata_to_txt_file(
 def batch_uniprot_metadata(seqids, uniprot_fname):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
-  by parse_uniprot_text) of the given seqids. The seqids
+  by parse_uniprot_txt_file) of the given seqids. The seqids
   must be valid uniprot identifiers.
 
   Returns a dictionary of uniprot data with the input
@@ -252,7 +252,7 @@ def batch_uniprot_metadata(seqids, uniprot_fname):
     print "Looking up %d seqids at http://www.uniprot.org" % len(seqids)
     batch_uniprot_metadata_to_txt_file(seqids, uniprot_fname)
 
-  uniprot = parse_uniprot_text(uniprot_fname)
+  uniprot = parse_uniprot_txt_file(uniprot_fname)
 
   # resort the dictionary wrt to input seqids as keys
   results = {}
@@ -366,5 +366,8 @@ def read_fasta(fasta_db, seqid_fn=None):
         proteins[seqid]['sequence'] += words[0]
   return seqids, proteins
   
+
+
+# TODO: write_fasta?
 
 
