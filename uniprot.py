@@ -1,7 +1,7 @@
 import os
 import urllib
 import urllib2
-import pprint
+import json
 import textwrap
 
 """
@@ -24,29 +24,26 @@ including the protein sequence.
 # couple of helper functions to cache Python dictionaries.
 
 
-def read_dict(fname_dict):
-  return eval(open(fname_dict).read())
+def read_dict(cache_json):
+  return json.load(open(cache_json, 'rU'))
 
 
-def write_dict(a_dict, fname_dict, indent=2):
-  pprint.pprint(
-      a_dict, 
-      indent=indent, 
-      stream=open(fname_dict, 'w'))
+def write_dict(a_dict, cache_json, indent=2):
+  json.dump(a_dict, fp=open(cache_json, 'w'), indent=indent)
 
 
-def cache_dict_fn(dict_fn, cache_fname, is_overwrite=False):
+def cache_dict_fn(dict_fn, cache_json, is_overwrite=False):
   """
   This is a convenience wrapper for lazy evaluation
   of a function that returns a dictionary. If the
-  cache_fname exists, the file is read and returned,
+  cache_json exists, the file is read and returned,
   otherwise the fn() is run.
   """
-  if not is_overwrite and os.path.isfile(cache_fname):
-    return read_dict(cache_fname)
+  if not is_overwrite and os.path.isfile(cache_json):
+    return read_dict(cache_json)
   else:
     results = dict_fn()
-    write_dict(results, cache_fname)
+    write_dict(results, cache_json)
     return results
 
 
@@ -97,7 +94,7 @@ def batch_uniprot_id_mapping_pairs(
 
 
 
-def sequentially_convert_to_uniprot_id(seqids, fname_dict):
+def sequentially_convert_to_uniprot_id(seqids, cache_json):
   """
   This is the key function to convert an arbitary seqid to a
   uniprot id. It only works for one seqid per url request, so
@@ -108,10 +105,10 @@ def sequentially_convert_to_uniprot_id(seqids, fname_dict):
 
   Returns a dictionary of the input seqids as keys. 
   """
-  if not os.path.isfile(fname_dict):
+  if not os.path.isfile(cache_json):
     mapping = {}
   else:
-    mapping = read_dict(fname_dict)
+    mapping = read_dict(cache_json)
   for l in seqids:
     seqid = l.split()[0]
     if seqid not in mapping:
@@ -119,7 +116,7 @@ def sequentially_convert_to_uniprot_id(seqids, fname_dict):
             'ACC+ID', 'ACC', ['?' + seqid])
       if result:
         mapping[seqid] = result[0][0]
-        write_dict(mapping, fname_dict)
+        write_dict(mapping, cache_json)
         print seqid, "->", mapping[seqid]
       else:
         print seqid, '-> [null]'

@@ -5,7 +5,7 @@ import pprint
 
 # Clean up caches
 
-os.system('rm *cache*')
+os.system('rm *output* *cache*')
 
 
 # Example 1 - reading a fasta file
@@ -35,7 +35,7 @@ EFG_MYCA1 YP_885981.1 CpC231_1796
 """.split()
 
 mapping = uniprot.sequentially_convert_to_uniprot_id(
-    seqids, 'cache.dict')
+    seqids, 'cache.json')
 
 uniprot_seqids = mapping.values()
 
@@ -50,7 +50,7 @@ pprint.pprint(uniprot_data, indent=2)
 for l in open('cache2.txt'):
   print l.strip()
 
-uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
+uniprot.write_fasta('example.output.fasta', uniprot_data, uniprot_seqids)
 
 
 # Example 5 - chaining commands to make your own
@@ -59,7 +59,7 @@ uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
 
 def map_to_refseq(seqids):
   uniprot_mapping = uniprot.sequentially_convert_to_uniprot_id(
-      seqids, 'func.cache.dict')
+      seqids, 'func.cache.json')
   uniprot_ids = uniprot_mapping.values()
   pairs = uniprot.batch_uniprot_id_mapping_pairs(
     'ACC', 'P_REFSEQ_AC', uniprot_ids)
@@ -70,7 +70,7 @@ def map_to_refseq(seqids):
     for pair in pairs:
       if uniprot_id == pair[0]: 
         mapping[seqid] = pair[1]
-  os.remove('func.cache.dict')
+  os.remove('func.cache.json')
   return mapping
 
 

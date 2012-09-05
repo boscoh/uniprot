@@ -75,11 +75,11 @@ excruciatingly slow:
     """.split()
 
     mapping = uniprot.sequentially_convert_to_uniprot_id(
-        seqids, 'cache.dict')
+        seqids, 'cache.json')
 
     pprint.pprint(mapping, indent=2)
 
-This function require a caching filename as parameter.
+This function require a caching filename `cache.json` as parameter.
 This is because such queries are very temperamental - it
 depends on your network latency, as well as the good graces
 of uniprot.org itself. As such, the functions caches
@@ -119,7 +119,7 @@ that directly transform ID's of your choice:
 
     def map_to_refseq(seqids):
       uniprot_mapping = uniprot.sequentially_convert_to_uniprot_id(
-          seqids, 'func.cache.dict')
+          seqids, 'func.cache.json')
       uniprot_ids = uniprot_mapping.values()
       pairs = uniprot.batch_uniprot_id_mapping_pairs(
         'ACC', 'P_REFSEQ_AC', uniprot_ids)
@@ -130,7 +130,7 @@ that directly transform ID's of your choice:
         for pair in pairs:
           if uniprot_id == pair[0]: 
             mapping[seqid] = pair[1]
-      os.remove('func.cache.dict')
+      os.remove('func.cache.json')
       return mapping
 
     seqids = " EFG_MYCA1 YP_885981.1 CpC231_1796 ".split()
