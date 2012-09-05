@@ -197,6 +197,7 @@ def parse_uniprot_txt_file(uniprot_fname):
         descriptions[i] = description[j+1:].replace(';', '')
       else:
         del descriptions[i]
+    entry['description'] = '; '.join(descriptions)
 
   return uniprot_data
 
@@ -377,7 +378,7 @@ def write_fasta(
   f = open(fasta_filename, "w")
   for seqid in seqids:
     seq_wrap = textwrap.fill(proteins[seqid]['sequence'], width)
-    f.write(">%s\n%s\n" % (proteins[seqid]['description'], seq_wrap))
+    f.write(">%s %s\n%s\n" % (seqid, proteins[seqid]['description'], seq_wrap))
   f.close()
 
 

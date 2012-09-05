@@ -58,7 +58,7 @@ identifiers (ACC):
     pairs = uniprot.batch_uniprot_id_mapping_pairs(
       'P_REFSEQ_AC', 'ACC', seqids)
 
-    pprint.pprint(mapping, indent=2)
+    pprint.pprint(pairs, indent=2)
 
 Most of the routines require a caching filename as parameter.
 This is because such queries are very temperamental - it
@@ -105,6 +105,10 @@ Simply read in the cache.txt text file:
 
     for l in open('cache.txt'):
       print l
+
+For instance, you might want to save the fasta sequences:
+
+    uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
 
 ## Chaining calls
 
