@@ -2,7 +2,7 @@ import os
 import urllib
 import urllib2
 import pprint
-
+import textwrap
 
 """
 This is my uniprot python library. It provides a bunch of 
@@ -226,8 +226,9 @@ def batch_uniprot_metadata_to_txt_file(
   
   Resultant text file is stored in uniprot_fname.
   """
+  n_seqid = len(seqids)
   f = open(uniprot_fname, 'w')
-  for i in range(0, len(seqids), n_batch):
+  for i in range(0, n_seqid, n_batch):
     if n_seqid > n_batch:
       print "Looking up %d-%d seqid mappings" % (i, i+n_batch)
     txt = fetch_uniprot_metadata_txt(seqids[i:i+n_batch])
@@ -284,7 +285,7 @@ def parse_fasta_header(header, seqid_fn=None):
   # check to see if we have an NCBI-style header
   if header[0] == '>':
     header = header[1:]
-  if header.find("|") != -1:
+  if header.find("|") != -1 and len(header.split('|')) == 4:
     tokens = header.split('|')
     # "gi|ginumber|gb|accession bla bla" becomes "gi|ginumber"
     seqid = "%s|%s" % (tokens[0], tokens[1].split()[0])
@@ -353,11 +354,11 @@ def read_fasta(fasta_db, seqid_fn=None):
   proteins = {}
   for line in open(fasta_db):
     if line.startswith(">"):
-      seqid, name = parse_fasta_header(line, seqid_fn)
+      seqid, description = parse_fasta_header(line, seqid_fn)
       seqids.append(seqid)
       proteins[seqid] = {
         'sequence':"",
-        'name':name,
+        'description':description,
       }
       continue
     if seqid is not None:
@@ -368,6 +369,16 @@ def read_fasta(fasta_db, seqid_fn=None):
   
 
 
-# TODO: write_fasta?
+def write_fasta(
+    fasta_filename, proteins, seqids, width=50):
+  """
+  Creates a fasta file of the sequences of a subset of the proteins.
+  """
+  f = open(fasta_filename, "w")
+  for seqid in seqids:
+    seq_wrap = textwrap.fill(proteins[seqid]['sequence'], width)
+    f.write(">%s\n%s\n" % (proteins[seqid]['description'], seq_wrap))
+  f.close()
+
 
 
