@@ -5,7 +5,7 @@ import pprint
 
 # Clean up caches
 
-# os.system('rm cache*dict')
+os.system('rm *cache*')
 
 
 # Example 1 - reading a fasta file
@@ -70,6 +70,7 @@ def map_to_refseq(seqids):
     for pair in pairs:
       if uniprot_id == pair[0]: 
         mapping[seqid] = pair[1]
+  os.remove('func.cache.dict')
   return mapping
 
 
