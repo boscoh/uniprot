@@ -24,6 +24,12 @@ There are various ways to access the mapping service,
 where each method has its pros and cons (speed vs. robustness).
 
 
+# Dependencies
+
+The requests.py library. Install using PyPi
+   
+     pip install requests
+
 
 # Examples
 

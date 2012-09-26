@@ -3,6 +3,9 @@ import urllib
 import urllib2
 import json
 import textwrap
+import time
+import StringIO
+import requests
 
 """
 This is my uniprot python library. It provides a bunch of 
@@ -48,30 +51,6 @@ def cache_dict_fn(dict_fn, cache_json, is_overwrite=False):
 
 
 
-def fetch_uniprot_id_mapping(from_type, to_type, seqids):
-  """
-  Converts a set of identifiers.
-
-  from_type and to_type can be obtained from:
-    http://www.uniprot.org/faq/28#mapping-faq-table
-
-  Returns id mapping as pairs in tab-separated text format.
-  """
-  base = 'http://www.uniprot.org'
-  tool = 'mapping'
-  params = {
-    'from': from_type,
-    'to': to_type,
-    'format': 'tab',
-    'query': ' '.join(seqids),
-  }
-  data = urllib.urlencode(params)
-  url = base+'/'+tool+'?'+data
-  response = urllib2.urlopen(url)
-  return response.read()
-
-
-
 def batch_uniprot_id_mapping_pairs(
     from_type, to_type, seqids, n_batch=100):
   """
@@ -83,13 +62,14 @@ def batch_uniprot_id_mapping_pairs(
 
   Returns a list of matched pairs of identifiers.
   """
-  txt = ""
-  n_seqid = len(seqids)
-  for i in range(0, n_seqid, n_batch):
-    if n_seqid > n_batch:
-      print "Looking up %d-%d seqid mappings" % (i, i+n_batch)
-    txt += fetch_uniprot_id_mapping(from_type, to_type, seqids[i:i+n_batch])
-  lines = filter(lambda l: 'from' not in l.lower(), txt.splitlines())
+  r = requests.post(
+      'http://www.uniprot.org/mapping/', 
+      params={
+        'from': from_type,
+        'to': to_type,
+        'format': 'tab',
+        'query': ' '.join(seqids)})
+  lines = filter(lambda l: 'from' not in l.lower(), r.text.splitlines())
   return [l.split('\t')[:2] for l in lines]
 
 
@@ -203,41 +183,6 @@ def parse_uniprot_txt_file(uniprot_fname):
 
 
 
-def fetch_uniprot_metadata_txt(seqids):
-  """
-  Makes a url request to uniprot.org to fetch the uniprot
-  metadata in text format for the given set of seqids.
-  """
-  uri = "http://uniprot.org/uniprot/"
-  full_url = uri + "?"
-  full_url += 'query='
-  accs = [r'accession:' + s for s in seqids]
-  full_url += r'+OR+'.join(accs)
-  full_url += '&format=txt'
-  return urllib2.urlopen(full_url).read()
-
-
-
-def batch_uniprot_metadata_to_txt_file(
-  seqids, uniprot_fname, n_batch=100):
-  """
-  This uses batch processing in the url formation
-  for 100 seqids at a time. This is what I've found to be
-  a "safe" number of parameters for the url request.
-  
-  Resultant text file is stored in uniprot_fname.
-  """
-  n_seqid = len(seqids)
-  f = open(uniprot_fname, 'w')
-  for i in range(0, n_seqid, n_batch):
-    if n_seqid > n_batch:
-      print "Looking up %d-%d seqid mappings" % (i, i+n_batch)
-    txt = fetch_uniprot_metadata_txt(seqids[i:i+n_batch])
-    f.write(txt)
-  f.close()
-
-
-
 def batch_uniprot_metadata(seqids, uniprot_fname):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
@@ -252,7 +197,16 @@ def batch_uniprot_metadata(seqids, uniprot_fname):
     print "Loading uniprot data from previous lookup", uniprot_fname
   else:
     print "Looking up %d seqids at http://www.uniprot.org" % len(seqids)
-    batch_uniprot_metadata_to_txt_file(seqids, uniprot_fname)
+    r = requests.post(
+        'http://www.uniprot.org/batch/', 
+        files={'file':StringIO.StringIO(' '.join(seqids))}, 
+        params={'format':'txt'})
+    while 'Retry-After' in r.headers:
+      t = int(r.headers['Retry-After'])
+      print 'Waiting %d' % t
+      time.sleep(t)
+      r = requests.get(r.url)
+    open(uniprot_fname, 'w').write(r.text)
 
   uniprot = parse_uniprot_txt_file(uniprot_fname)
 
@@ -371,11 +325,11 @@ def read_fasta(fasta_db, seqid_fn=None):
 
 
 def write_fasta(
-    fasta_filename, proteins, seqids, width=50):
+    fasta_fname, proteins, seqids, width=50):
   """
   Creates a fasta file of the sequences of a subset of the proteins.
   """
-  f = open(fasta_filename, "w")
+  f = open(fasta_fname, "w")
   for seqid in seqids:
     seq_wrap = textwrap.fill(proteins[seqid]['sequence'], width)
     f.write(">%s %s\n%s\n" % (seqid, proteins[seqid]['description'], seq_wrap))
