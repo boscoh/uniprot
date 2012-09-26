@@ -69,7 +69,7 @@ def batch_uniprot_id_mapping_pairs(
         'to': to_type,
         'format': 'tab',
         'query': ' '.join(seqids)})
-  lines = filter(lambda l: 'from' not in l.lower(), r.text.splitlines())
+  lines = [l for l in r.text.splitlines() if 'from' not in l.lower()]
   return [l.split('\t')[:2] for l in lines]
 
 
