@@ -229,21 +229,38 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
   seqids for uniprot identifiers by using a mapping call
   to uniprot first.
   """
-  
+
   stripped_seqids = [s[:6] for s in seqids]
-  pairs = uniprot.batch_uniprot_id_mapping_pairs(
+  pairs = batch_uniprot_id_mapping_pairs(
       'ACC', 'ACC', stripped_seqids)
   uniprot_seqids = []
   for seqid1, seqid2 in pairs:
     if seqid1 in stripped_seqids and seqid1 not in uniprot_seqids:
       uniprot_seqids.append(seqid1)
-  uniprot_dict = uniprot.batch_uniprot_metadata(
-      uniprot_seqids, cache_txt)
+  uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_txt)
   for seqid in seqids:
     if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
       uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
   return uniprot_dict
 
+
+
+def sort_seqids_by_uniprot(names, uniprot_dict):
+  """
+  Weighs protein names to whether they are found
+  by uniprot, and are reviewed
+  """
+  def seqid_val(seqid):
+    val = 3
+    if seqid in uniprot_dict:
+      val -= 1
+      if uniprot_dict[seqid]['is_reviewed']:
+        val -= 1
+      if len(seqid) <= 6:
+        val -= 1
+    return val
+  names.sort(cmp=lambda a, b: seqid_val(a) - seqid_val(b))
+  return names    
 
 
 def parse_fasta_header(header, seqid_fn=None):
