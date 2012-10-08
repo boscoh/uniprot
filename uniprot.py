@@ -102,7 +102,7 @@ def sequentially_convert_to_uniprot_id(seqids, cache_json):
 
 
 
-def parse_uniprot_txt_file(uniprot_fname):
+def parse_uniprot_txt_file(cache_txt):
   """
   Parses a text file of metadata retrieved from uniprot.org.
 
@@ -118,7 +118,7 @@ def parse_uniprot_txt_file(uniprot_fname):
   tag = None
   uniprot_id = None
   uniprot_data = {}
-  for l in open(uniprot_fname):
+  for l in open(cache_txt):
     test_tag = l[:5].strip()
     if test_tag and test_tag != tag:
       tag = test_tag
@@ -181,7 +181,7 @@ def parse_uniprot_txt_file(uniprot_fname):
 
 
 
-def batch_uniprot_metadata(seqids, uniprot_fname):
+def batch_uniprot_metadata(seqids, cache_txt):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
   by parse_uniprot_txt_file) of the given seqids. The seqids
@@ -191,8 +191,8 @@ def batch_uniprot_metadata(seqids, uniprot_fname):
   seqids as keys.
   """
 
-  if os.path.isfile(uniprot_fname):
-    print "Loading uniprot data from previous lookup", uniprot_fname
+  if os.path.isfile(cache_txt):
+    print "Loading uniprot data from previous lookup", cache_txt
   else:
     print "Looking up %d seqids at http://www.uniprot.org" % len(seqids)
     r = requests.post(
@@ -204,9 +204,10 @@ def batch_uniprot_metadata(seqids, uniprot_fname):
       print 'Waiting %d' % t
       time.sleep(t)
       r = requests.get(r.url)
-    open(uniprot_fname, 'w').write(r.text)
+    open(cache_txt, 'w').write(r.text)
 
-  uniprot = parse_uniprot_txt_file(uniprot_fname)
+  print "Reading from", cache_txt
+  uniprot = parse_uniprot_txt_file(cache_txt)
 
   # resort the dictionary wrt to input seqids as keys
   results = {}
@@ -238,7 +239,7 @@ def parse_fasta_header(header, seqid_fn=None):
   # check to see if we have an NCBI-style header
   if header[0] == '>':
     header = header[1:]
-  if header.find("|") != -1 and len(header.split('|')) == 4:
+  if header.find("|") != -1:
     tokens = header.split('|')
     # "gi|ginumber|gb|accession bla bla" becomes "gi|ginumber"
     seqid = "%s|%s" % (tokens[0], tokens[1].split()[0])
