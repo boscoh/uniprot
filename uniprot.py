@@ -223,6 +223,29 @@ def batch_uniprot_metadata(seqids, cache_txt):
 
 
 
+def get_filtered_uniprot_metadata(seqids, cache_txt):
+  """
+  Returns a dictionary of uniprot data, but filters
+  seqids for uniprot identifiers by using a mapping call
+  to uniprot first.
+  """
+  
+  stripped_seqids = [s[:6] for s in seqids]
+  pairs = uniprot.batch_uniprot_id_mapping_pairs(
+      'ACC', 'ACC', stripped_seqids)
+  uniprot_seqids = []
+  for seqid1, seqid2 in pairs:
+    if seqid1 in stripped_seqids and seqid1 not in uniprot_seqids:
+      uniprot_seqids.append(seqid1)
+  uniprot_dict = uniprot.batch_uniprot_metadata(
+      uniprot_seqids, cache_txt)
+  for seqid in seqids:
+    if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
+      uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
+  return uniprot_dict
+
+
+
 def parse_fasta_header(header, seqid_fn=None):
   """
   Parses a FASTA format header (with our without the initial '>').
