@@ -186,9 +186,6 @@ def batch_uniprot_metadata(seqids, cache_txt):
   Returns a dictonary of the uniprot metadata (as parsed 
   by parse_uniprot_txt_file) of the given seqids. The seqids
   must be valid uniprot identifiers.
-
-  Returns a dictionary of uniprot data with the input
-  seqids as keys.
   """
 
   if os.path.isfile(cache_txt):
@@ -232,7 +229,7 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
 
   stripped_seqids = [s[:6] for s in seqids]
   pairs = batch_uniprot_id_mapping_pairs(
-      'ACC', 'ACC', stripped_seqids)
+      'ACC+ID', 'ACC', stripped_seqids)
   uniprot_seqids = []
   for seqid1, seqid2 in pairs:
     if seqid1 in stripped_seqids and seqid1 not in uniprot_seqids:
@@ -283,7 +280,7 @@ def parse_fasta_header(header, seqid_fn=None):
     tokens = header.split('|')
     # "gi|ginumber|gb|accession bla bla" becomes "gi|ginumber"
     seqid = "%s|%s" % (tokens[0], tokens[1].split()[0])
-    name = seqid + ' ' + tokens[-1:][0].strip()
+    name = seqid + ' ' + tokens[-1].strip()
   else:
     # otherwise just split on spaces & hope for the best
     tokens = header.split()
