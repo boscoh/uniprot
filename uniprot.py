@@ -154,6 +154,14 @@ def parse_uniprot_txt_file(cache_txt):
         ids = [w[:-1] for w in words[1:]]
         ids = filter(lambda w: len(w) > 1, ids)
         entry['kegg'].extend(ids)
+      if 'GO' in words[0]:
+        if 'go' not in entry:
+          entry['go'] = []
+        entry['go'].append(words[1][:-1])
+      if 'Pfam' in words[0]:
+        if 'pfam' not in entry:
+          entry['pfam'] = []
+        entry['pfam'].append(words[1][:-1])
     if tag == "GN":
       if 'gene' not in entry and len(words) > 0:
         pieces = words[0].split("=")
@@ -186,6 +194,8 @@ def batch_uniprot_metadata(seqids, cache_txt):
   Returns a dictonary of the uniprot metadata (as parsed 
   by parse_uniprot_txt_file) of the given seqids. The seqids
   must be valid uniprot identifiers.
+
+  uniprot can't handle isoforms.
   """
 
   if os.path.isfile(cache_txt):
@@ -307,7 +317,8 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
   live_name = None
   proteins = {}
   if seqid_fn is not None:
-    seqids = map(seqid_fn, seqids)
+    seqid_map = { seqid_fn(s):s for s in seqids }
+    seqids = seqid_map.keys()
   for i, line in enumerate(open(fasta_db)):
     if line.startswith(">"):
       fasta_seqid, description = \
@@ -315,7 +326,7 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
       live_name = None
       for seqid in seqids:
         if fasta_seqid == seqid:
-          live_name = fasta_seqid
+          live_name = seqid_map[fasta_seqid]
           proteins[live_name] = {
             'sequence': "",
             'description': description,
@@ -370,6 +381,7 @@ def write_fasta(
     seq_wrap = textwrap.fill(proteins[seqid]['sequence'], width)
     f.write(">%s %s\n%s\n" % (seqid, proteins[seqid]['description'], seq_wrap))
   f.close()
+
 
 
 
