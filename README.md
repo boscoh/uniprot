@@ -85,7 +85,7 @@ excruciatingly slow:
 
     pprint.pprint(mapping, indent=2)
 
-This function require a caching filename `cache.json` as parameter.
+This function asks for an opitonal caching filename `cache.json` as parameter.
 This is because such queries are very temperamental - it
 depends on your network latency, as well as the good graces
 of uniprot.org itself. As such, the functions caches
@@ -115,6 +115,38 @@ Simply read in the cache.txt text file:
 For instance, you might want to save the fasta sequences:
 
     uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
+
+
+## Filtering undecipherable seqid's
+
+As a bioinformatician, you are probably given FASTA files with sequence identifiers
+from all sorts of different places. From these, you might extract an:
+
+     seqids = open('seqids.txt', 'r').split()
+
+Looking up the protein metadata using uniprot is difficult because non-uniprot
+ids could produce different kinds of behavior. The best way is simply to
+call a seemingly redundant call of ID mapping from uniprot to uniprot:
+
+    pairs = batch_uniprot_id_mapping_pairs('ACC+ID', 'ACC', seqids)
+
+This will pick out the seqids that uniprot.org can recognize. This is a 
+common enough operation to warrant its own function 
+  
+    metadata = uniprot.get_filtered_uniprot_metadata(seqids)
+
+where a preemptive call to the uniprot mapping is used to filter out non-uniprot
+identifiers.
+
+Finally, an example of a more comprehensive metadata function is provided that
+does some limited parsing for some more common ID types. Currrently, pattern
+matching is used to identify ENSEMBL, REFSEQ and YEAST ORF seqids, as well,
+the function can handle the typical xx|xxxxxxx|xxx format found in many databases.
+Simply run the seqids through 
+
+    metadata = uniprot.get_metadata_with_some_seqid_conversions(
+         seqids, 'cache.txt')
+
 
 ## Chaining calls
 

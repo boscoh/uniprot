@@ -204,7 +204,7 @@ def batch_uniprot_metadata(seqids, cache_fname=None):
     print "Loading uniprot data from previous lookup", cache_fname
     cache_txt = open(cache_fname).read()
   else:
-    print "Fetching metadata for %d mapped UNIPROT IDs" % len(seqids)
+    print "Fetching metadata for %d UNIPROT IDs" % len(seqids)
     r = requests.post(
         'http://www.uniprot.org/batch/', 
         files={'file':StringIO.StringIO(' '.join(seqids))}, 
@@ -237,6 +237,28 @@ def batch_uniprot_metadata(seqids, cache_fname=None):
   return results
 
 
+def get_filtered_uniprot_metadata(seqids, cache_txt):
+  """
+  Returns a dictionary of uniprot data, but filters
+  seqids for uniprot identifiers by using a mapping call
+  to uniprot first.
+  """
+
+  stripped_seqids = [s[:6] for s in seqids]
+  pairs = batch_uniprot_id_mapping_pairs(
+      'ACC+ID', 'ACC', stripped_seqids)
+  uniprot_seqids = []
+  for seqid1, seqid2 in pairs:
+    if seqid1 in stripped_seqids and seqid1 not in uniprot_seqids:
+      uniprot_seqids.append(seqid1)
+  uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_txt)
+  for seqid in seqids:
+    if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
+      uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
+  return uniprot_dict
+
+
+# Name pattern matching for sequence identifiers
 
 def is_text(seqid):
   if re.match('[A-Z,a-z,_]+$', seqid):
@@ -280,15 +302,7 @@ def is_ensembl(seqid):
   return False
 
 
-def get_naked_seqid(seqid):
-  if '|' not in seqid:
-    return seqid
-  pieces = seqid.split('|')
-  if is_text(pieces[0]):
-    return pieces[1]
-  return seqid
-
-
+# some unit-testintg
 assert is_refseq('NP_064308.1')
 assert not is_refseq('NP_064308a1')
 assert is_refseq('NP_064308')
@@ -301,7 +315,24 @@ assert not is_uniprot_variant('A2AAA3-a')
 assert not is_uniprot_variant('A2AAA3aaab')
 
 
+def get_naked_seqid(seqid):
+  "Returns key ID if seqid in form xx|xxxxx|xxx"
+  if '|' not in seqid:
+    return seqid
+  pieces = seqid.split('|')
+  if is_text(pieces[0]):
+    return pieces[1]
+  return seqid
+
+
 def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type):
+  """
+  Given a list of ID entries, extracts a list of seqids that
+  have no defined type and matches the given pattern matcher
+  is_id_fn and then interrogates http://uniprot.org to get
+  the matching UNIPROT id. Puts this into the 'uniprot_id'
+  filed of the entires.
+  """
   alternative_ids = []
   for entry in entries:
     if entry['id_type'] != '':
@@ -322,6 +353,16 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type):
 
 
 def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
+  """
+  Fetches the uniprot metadata for a bunch of seqids. Does a
+  restricted set of name matchings to sort into buckets
+  that will be processed individually. At the moment, can handle:
+    - ensembl
+    - refseq
+    - uniprot
+    - yeast-based ORF names.
+  """
+  print "Looking up UNIPROT meta-data for %d seqids" % len(seqids)
   entries = []
   for seqid in seqids:
     entries.append({
@@ -331,14 +372,13 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
       'uniprot_id':'',
       'metadata':''})
   
-  # break up pieces when in form xx|xxxxx|xxx
   for entry in entries:
     entry['seqid'] = get_naked_seqid(entry['raw_seqid'])
 
   # convert a few types into uniprot_ids
   id_types = [
     (is_refseq, 'refseq', 'P_REFSEQ_AC'),
-    (is_sgd, 'SGD', 'SGD_ID'),
+    (is_sgd, 'ordered-locus-tag', 'ENSEMBLGENOME_PRO_ID'),
     (is_ensembl, 'ensembl', 'ENSEMBL_ID')]
   for is_id_fn, name, uniprot_mapping_type in id_types:
     probe_id_type(entries, is_id_fn, name, uniprot_mapping_type)
@@ -356,59 +396,35 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
   uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_fname)
 
   result = {}
-  n_fail = 0
   for entry in entries:
     if entry['uniprot_id'] == "":
-      n_fail += 1
       continue
     uniprot_id = entry['uniprot_id']
     if uniprot_id not in uniprot_dict:
-      n_fail += 1
       continue
     result[entry['raw_seqid']] = uniprot_dict[uniprot_id]
 
-  print "Failed to get metadata for %d/%d UNIPROT IDs, deleted entries perhaps?" % (n_fail, len(entries))
   return result
 
 
-def get_filtered_uniprot_metadata(seqids, cache_txt):
+def sort_seqids_by_uniprot(seqids, metadata):
   """
-  Returns a dictionary of uniprot data, but filters
-  seqids for uniprot identifiers by using a mapping call
-  to uniprot first.
-  """
-
-  stripped_seqids = [s[:6] for s in seqids]
-  pairs = batch_uniprot_id_mapping_pairs(
-      'ACC+ID', 'ACC', stripped_seqids)
-  uniprot_seqids = []
-  for seqid1, seqid2 in pairs:
-    if seqid1 in stripped_seqids and seqid1 not in uniprot_seqids:
-      uniprot_seqids.append(seqid1)
-  uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_txt)
-  for seqid in seqids:
-    if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
-      uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
-  return uniprot_dict
-
-
-
-def sort_seqids_by_uniprot(names, uniprot_dict):
-  """
-  Weighs protein names to whether they are found
-  by uniprot, and are reviewed
+  Sorting function for seqids when a uniprot metadata
+  dictionary is provided. Weighs protein names to whether 
+  they are found by uniprot, and are reviewed
   """
   def seqid_val(seqid):
     val = 3
-    if seqid in uniprot_dict:
+    if seqid in metadata:
       val -= 1
-      if uniprot_dict[seqid]['is_reviewed']:
+      if metadata[seqid]['is_reviewed']:
         val -= 1
-      if len(get_naked_seqid(seqid)) <= 6:
+      if is_uniprot(get_naked_seqid(seqid)):
         val -= 1
     return val
-  names.sort(cmp=lambda a, b: seqid_val(a) - seqid_val(b))
-  return names    
+  results = list(seqids)
+  results.sort(cmp=lambda a, b: seqid_val(a) - seqid_val(b))
+  return results    
 
 
 def parse_fasta_header(header, seqid_fn=None):
