@@ -128,7 +128,7 @@ Looking up the protein metadata using uniprot is difficult because non-uniprot
 ids could produce different kinds of behavior. The best way is simply to
 call a seemingly redundant call of ID mapping from uniprot to uniprot:
 
-    pairs = batch_uniprot_id_mapping_pairs('ACC+ID', 'ACC', seqids)
+    pairs = uniprot.batch_uniprot_id_mapping_pairs('ACC+ID', 'ACC', seqids)
 
 This will pick out the seqids that uniprot.org can recognize. This is a 
 common enough operation to warrant its own function 
