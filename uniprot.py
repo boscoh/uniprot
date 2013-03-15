@@ -94,10 +94,10 @@ def sequentially_convert_to_uniprot_id(seqids, cache_json=None):
         mapping[seqid] = result[0][0]
         if cache_json:
           write_json(mapping, cache_json)
-      if seqid in mapping:
-        print seqid, "->", mapping[seqid]
-      else:
-        print seqid, '-> [null]'
+    if seqid in mapping:
+      print seqid, "->", mapping[seqid]
+    else:
+      print seqid, '-> [null]'
   return mapping
 
 
