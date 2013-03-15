@@ -30,8 +30,8 @@ def read_json(cache_json):
   return json.load(open(cache_json, 'rU'))
 
 
-def append_json(a_dict, cache_json, indent=2):
-  json.dump(a_dict, fp=open(cache_json, 'a'), indent=indent)
+def write_json(a_dict, cache_json, indent=2):
+  json.dump(a_dict, fp=open(cache_json, 'w'), indent=indent)
 
 
 def is_html(text):
@@ -93,7 +93,8 @@ def sequentially_convert_to_uniprot_id(seqids, cache_json=None):
       if result:
         mapping[seqid] = result[0][0]
         if cache_json:
-          append_json(mapping, cache_json)
+          write_json(mapping, cache_json)
+      if seqid in mapping:
         print seqid, "->", mapping[seqid]
       else:
         print seqid, '-> [null]'
