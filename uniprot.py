@@ -92,12 +92,15 @@ def sequentially_convert_to_uniprot_id(seqids, cache_json=None):
             'ACC+ID', 'ACC', ['?' + seqid])
       if result:
         mapping[seqid] = result[0][0]
-        if cache_json:
-          write_json(mapping, cache_json)
-    if seqid in mapping:
-      print seqid, "->", mapping[seqid]
-    else:
-      print seqid, '-> [null]'
+      else:
+        mapping[seqid] = "[null]"
+      if cache_json:
+        write_json(mapping, cache_json)
+    print seqid, "->", mapping[seqid]
+  seqids = mapping.keys()
+  for seqid in seqids:
+    if "[null]" in mapping[seqid]:
+      del mapping[seqid]
   return mapping
 
 
