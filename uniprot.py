@@ -345,8 +345,9 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
 
   # convert a few types into uniprot_ids
   id_types = [
-    (is_refseq, 'refseq', 'P_REFSEQ_AC'),
     (is_sgd, 'ordered-locus-tag', 'ENSEMBLGENOME_PRO_ID'),
+    (is_refseq, 'refseq', 'P_REFSEQ_AC'),
+    (is_refseq, 'refseq', 'REFSEQ_NT_ID'),
     (is_ensembl, 'ensembl', 'ENSEMBL_ID')]
   for is_id_fn, name, uniprot_mapping_type in id_types:
     probe_id_type(entries, is_id_fn, name, uniprot_mapping_type)
@@ -471,7 +472,9 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
       live_name = None
       for seqid in seqids:
         if fasta_seqid == seqid:
-          live_name = seqid_map[fasta_seqid]
+          live_name = fasta_seqid
+          if seqid_fn:
+            live_name = seqid_map[fasta_seqid]
           proteins[live_name] = {
             'sequence': "",
             'description': description,
