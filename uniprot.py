@@ -455,33 +455,31 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
   Extracts protein sequences from a fasta database, given
   a list of desired seqids. A seqid_fn can be given that
   parses both the input seqids and the seqid in the fasta 
-  file to faciliate matching.
-
-  Returns a dictionary for each seqid where the sequence
-  is found in the 'sequence' field.
+  file to faciliate matching, but the keys in the returned
+  structure corresponds to entries in 'seqids'.
   """
-  live_name = None
+  live_seqid = None
   proteins = {}
   if seqid_fn is not None:
-    seqid_map = { seqid_fn(s):s for s in seqids }
-    seqids = seqid_map.keys()
+    original_seqid_map = { seqid_fn(s):s for s in seqids }
+    seqids = original_seqid_map.keys()
   for i, line in enumerate(open(fasta_db)):
     if line.startswith(">"):
       fasta_seqid, description = \
           parse_fasta_header(line, seqid_fn)
-      live_name = None
+      live_seqid = None
       for seqid in seqids:
         if fasta_seqid == seqid:
-          live_name = fasta_seqid
+          live_seqid = fasta_seqid
           if seqid_fn:
-            live_name = seqid_map[fasta_seqid]
-          proteins[live_name] = {
+            live_seqid = original_seqid_map[fasta_seqid]
+          proteins[live_seqid] = {
             'sequence': "",
             'description': description,
           }
           break
-    elif live_name:
-      proteins[live_name]['sequence'] += line.strip()
+    elif live_seqid:
+      proteins[live_seqid]['sequence'] += line.strip()
   for seqid in proteins:
     sequence = proteins[seqid]['sequence']
     if sequence:
