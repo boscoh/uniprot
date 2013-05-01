@@ -246,6 +246,14 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
 
 
 def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=500):
+  """
+  Returns a dictonary of the uniprot metadata (as parsed 
+  by parse_uniprot_txt_file) of the given seqids. The seqids
+  must be valid uniprot identifiers.
+
+  uniprot can't handle isoforms.
+  """
+
   unique_seqids = list(set(seqids))
   metadata = {}
   i_seqid = 0
