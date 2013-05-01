@@ -198,7 +198,7 @@ def parse_uniprot_txt_file(cache_txt):
 
 
 
-def batch_uniprot_metadata(seqids, cache_fname=None):
+def fetch_uniprot_metadata(seqids, cache_fname=None):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
   by parse_uniprot_txt_file) of the given seqids. The seqids
@@ -244,6 +244,24 @@ def batch_uniprot_metadata(seqids, cache_fname=None):
         results[seqid] = results[primary_seqid]
   return results
 
+
+def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=500):
+  unique_seqids = list(set(seqids))
+  metadata = {}
+  i_seqid = 0
+  if batch_size is None:
+    batch_size = len(unique_seqids)
+  while i_seqid <= len(unique_seqids):
+    seqids_subset = unique_seqids[i_seqid:i_seqid+batch_size]
+    if cache_basename:
+      subset_cache = '%s%d.txt' % (cache_basename, i_seqid)
+    else:
+      subset_cache = None
+    metadata_subset = fetch_uniprot_metadata(
+        seqids_subset, cache_fname=subset_cache)
+    metadata.update(metadata_subset)
+    i_seqid += batch_size
+  return metadata
 
 
 def is_text(seqid):
