@@ -81,7 +81,7 @@ def sequentially_convert_to_uniprot_id(seqids, cache_json=None):
 
   Returns a dictionary of the input seqids as keys. 
   """
-  if not os.path.isfile(cache_json):
+  if cache_json is None or not os.path.isfile(cache_json):
     mapping = {}
   else:
     mapping = read_json(cache_json)
@@ -234,8 +234,9 @@ def batch_uniprot_metadata(seqids, cache_fname=None):
   # resort the dictionary wrt to input seqids as keys
   results = {}
   for uniprot_id in metadata.keys():
-    for seqid in metadata[uniprot_id]['accs']:
-      results[seqid] = metadata[uniprot_id]
+    for seqid in metadata[uniprot_id]['accs'] + [metadata[uniprot_id]['id']]:
+      if seqid in seqids:
+        results[seqid] = metadata[uniprot_id]
   for seqid in seqids:
     if seqid not in results:
       primary_seqid = seqid[:6]
