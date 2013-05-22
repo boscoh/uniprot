@@ -177,7 +177,9 @@ def parse_uniprot_txt_file(cache_txt):
         if len(pieces) > 1 and 'name' in pieces[0].lower():
           entry['gene'] = pieces[1].replace(';', '').replace(',', '')
     if tag == "OS":
-      entry['organism'] = line
+      if 'organism' not in entry:
+        entry['organism'] = ""
+      entry['organism'] += line
     if tag == "DE":
       if 'descriptions' not in entry:
         entry['descriptions'] = []
