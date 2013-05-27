@@ -40,8 +40,8 @@ def is_html(text):
   return False
 
 
-def batch_uniprot_id_mapping_pairs(
-    from_type, to_type, seqids, n_batch=100, cache_fname=None):
+def get_uniprot_id_mapping_pairs(
+    from_type, to_type, seqids, cache_fname):
   """
   Converts identifiers using above function, but launches url
   requests in safe batches of 100 seqids at a time.
@@ -68,6 +68,34 @@ def batch_uniprot_id_mapping_pairs(
     return []
   lines = [l for l in text.splitlines() if 'from' not in l.lower()]
   return [l.split('\t')[:2] for l in lines]
+
+
+def batch_uniprot_id_mapping_pairs(
+    from_type, to_type, seqids, batch_size=100, cache_basename=None):
+  """
+  Returns a dictonary of the uniprot metadata (as parsed 
+  by parse_uniprot_txt_file) of the given seqids. The seqids
+  must be valid uniprot identifiers.
+
+  uniprot can't handle isoforms.
+  """
+
+  pairs = []
+  i_seqid = 0
+  if batch_size is None:
+    batch_size = len(seqids)
+  while i_seqid <= len(seqids):
+    seqids_subset = seqids[i_seqid:i_seqid+batch_size]
+    if cache_basename:
+      subset_cache = '%s%d.txt' % (cache_basename, i_seqid)
+    else:
+      subset_cache = None
+    subset_pairs = get_uniprot_id_mapping_pairs(
+        from_type, to_type, seqids_subset, cache_fname=subset_cache)
+    pairs.extend(subset_pairs)
+    i_seqid += batch_size
+  return pairs
+
 
 
 def sequentially_convert_to_uniprot_id(seqids, cache_json=None):
