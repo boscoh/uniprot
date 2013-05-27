@@ -43,13 +43,10 @@ def is_html(text):
 def get_uniprot_id_mapping_pairs(
     from_type, to_type, seqids, cache_fname):
   """
-  Converts identifiers using above function, but launches url
-  requests in safe batches of 100 seqids at a time.
+  Returns a list of matched pairs of identifiers.
   
   from_type and to_type can be obtained from:
     http://www.uniprot.org/faq/28#mapping-faq-table
-
-  Returns a list of matched pairs of identifiers.
   """
   r = requests.post(
       'http://www.uniprot.org/mapping/', 
@@ -73,11 +70,12 @@ def get_uniprot_id_mapping_pairs(
 def batch_uniprot_id_mapping_pairs(
     from_type, to_type, seqids, batch_size=100, cache_basename=None):
   """
-  Returns a dictonary of the uniprot metadata (as parsed 
-  by parse_uniprot_txt_file) of the given seqids. The seqids
-  must be valid uniprot identifiers.
+  Returns a list of matched pairs of identifiers.
+  Converts identifiers using above function 'get_uniprot_id_mapping_pairs'
+  but launches url requests in safe batches of 100 seqids at a time.
 
-  uniprot can't handle isoforms.
+  from_type and to_type can be obtained from:
+    http://www.uniprot.org/faq/28#mapping-faq-table
   """
 
   pairs = []
