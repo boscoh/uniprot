@@ -48,20 +48,20 @@ def get_uniprot_id_mapping_pairs(
   from_type and to_type can be obtained from:
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
-  if cache_fname:
-    if not os.path.isfile(cache_fname):
-      r = requests.post(
-          'http://www.uniprot.org/mapping/', 
-          params={
-            'from': from_type,
-            'to': to_type,
-            'format': 'tab',
-            'query': ' '.join(seqids)})
-      text = r.text
+  if cache_fname and os.path.isfile(cache_fname):
+    text = open(cache_fname).read()
+  else:
+    r = requests.post(
+        'http://www.uniprot.org/mapping/', 
+        params={
+          'from': from_type,
+          'to': to_type,
+          'format': 'tab',
+          'query': ' '.join(seqids)})
+    text = r.text
+    if cache_fname:
       with open(cache_fname, 'w') as f:
         f.write(text)
-    else:
-      text = open(cache_fname).read()
   if is_html(text):
     # failed call results in a HTML error reporting page
     print "Error in fetching metadata"
