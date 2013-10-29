@@ -49,8 +49,10 @@ def get_uniprot_id_mapping_pairs(
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
   if cache_fname and os.path.isfile(cache_fname):
+    print "Loading (%s->ACC) seqid mappings in %s" % (from_type.upper(), cache_fname)
     text = open(cache_fname).read()
   else:
+    print "Fetching %s (%s->ACC) seqid mappings" % (len(seqids), from_type.upper())
     r = requests.post(
         'http://www.uniprot.org/mapping/', 
         params={
@@ -213,6 +215,10 @@ def parse_uniprot_txt_file(cache_txt):
       if 'descriptions' not in entry:
         entry['descriptions'] = []
       entry['descriptions'].append(line)
+    if tag == "CC":
+      if 'comment' not in entry:
+        entry['comment'] = ''
+      entry['comment'] += line + '\n'
 
   for entry in uniprot_data.values():
     descriptions = entry['descriptions']
@@ -239,10 +245,10 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   """
 
   if cache_fname and os.path.isfile(cache_fname):
-    print "Loading uniprot data from previous lookup", cache_fname
+    print "Loading uniprot metadata from", cache_fname
     cache_txt = open(cache_fname).read()
   else:
-    print "Fetching metadata for %d UNIPROT IDs" % len(seqids)
+    print "Fetching uniprot metadata for %d ACC seqids ..." % len(seqids)
     r = requests.post(
         'http://www.uniprot.org/batch/', 
         files={'file':StringIO.StringIO(' '.join(seqids))}, 
@@ -345,6 +351,10 @@ def is_ensembl(seqid):
   return False
 
 
+def is_maybe_uniprot_id(seqid):
+  return '_' in seqid
+
+
 def get_naked_seqid(seqid):
   if '|' not in seqid:
     return seqid
@@ -366,7 +376,7 @@ assert not is_uniprot_variant('A2AAA3-a')
 assert not is_uniprot_variant('A2AAA3aaab')
 
 
-def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type):
+def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname):
   alternative_ids = []
   for entry in entries:
     if entry['id_type'] != '':
@@ -377,9 +387,8 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type):
   if len(alternative_ids) == 0:
     return
   n_id = len(alternative_ids)
-  print "Mapping %d %s IDs to UNIPROT IDs" % (n_id, name.upper())
   pairs = batch_uniprot_id_mapping_pairs(
-      uniprot_mapping_type, 'ACC', alternative_ids)
+      uniprot_mapping_type, 'ACC', alternative_ids, cache_basename=cache_fname)
   alternative_to_uniprot = { p[0]:p[1] for p in pairs }
   for entry in entries:
     if entry['seqid'] in alternative_to_uniprot:
@@ -387,7 +396,7 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type):
 
 
 def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
-  print "Looking up UNIPROT meta-data for %d seqids" % len(seqids)
+  print "Looking up uniprot metadata for %d seqids" % len(seqids)
   entries = []
   for seqid in seqids:
     entries.append({
@@ -406,9 +415,10 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
     (is_sgd, 'ordered-locus-tag', 'ENSEMBLGENOME_PRO_ID'),
     (is_refseq, 'refseq', 'P_REFSEQ_AC'),
     (is_refseq, 'refseq', 'REFSEQ_NT_ID'),
-    (is_ensembl, 'ensembl', 'ENSEMBL_ID')]
+    (is_ensembl, 'ensembl', 'ENSEMBL_ID'),
+    (is_maybe_uniprot_id, 'uniprot-entity', 'ID')]
   for is_id_fn, name, uniprot_mapping_type in id_types:
-    probe_id_type(entries, is_id_fn, name, uniprot_mapping_type)
+    probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname+'.'+name)
 
   # delete the variant suffixes in some uniprot id's
   for entry in entries:
@@ -416,11 +426,10 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
       entry['seqid'] = entry['seqid'][:6]
 
   # map UNIPROT ID's to their current best entry
-  probe_id_type(entries, is_uniprot, 'GENERAL-UNIPROT', 'ACC+ID')
+  probe_id_type(entries, is_uniprot, 'UNIPROT-ACC', 'ACC+ID', cache_fname+'.seqid')
 
   uniprot_seqids = [entry['uniprot_id'] for entry in entries 
                     if 'uniprot_id' in entry]
-  print 'cache', cache_fname
   uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_fname)
 
   result = {}
@@ -454,7 +463,6 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
     if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
       uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
   return uniprot_dict
-
 
 
 def sort_seqids_by_uniprot(names, uniprot_dict):
