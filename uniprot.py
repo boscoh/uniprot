@@ -499,7 +499,7 @@ def parse_fasta_header(header, seqid_fn=None):
   # check to see if we have an NCBI-style header
   if header[0] == '>':
     header = header[1:]
-  if header.find("|") != -1:
+  if header.find("|") != -1 and '|' in header.split()[0]:
     tokens = header.split('|')
     # "gi|ginumber|gb|accession bla bla" becomes "gi|ginumber"
     seqid = "%s|%s" % (tokens[0], tokens[1].split()[0])
