@@ -52,14 +52,15 @@ def get_uniprot_id_mapping_pairs(
     print "Loading (%s->ACC) seqid mappings in %s" % (from_type.upper(), cache_fname)
     text = open(cache_fname).read()
   else:
-    print "Fetching %s (%s->ACC) seqid mappings" % (len(seqids), from_type.upper())
+    print "Fetching %s (%s->ACC) seqid mappings ..." % (len(seqids), from_type.upper())
     r = requests.post(
         'http://www.uniprot.org/mapping/', 
-        params={
+         files={'file':StringIO.StringIO(' '.join(seqids))}, 
+         params={
           'from': from_type,
           'to': to_type,
           'format': 'tab',
-          'query': ' '.join(seqids)})
+          'query': ''})
     text = r.text
     if cache_fname:
       with open(cache_fname, 'w') as f:
@@ -73,7 +74,7 @@ def get_uniprot_id_mapping_pairs(
 
 
 def batch_uniprot_id_mapping_pairs(
-    from_type, to_type, seqids, batch_size=100, cache_basename=None):
+    from_type, to_type, seqids, batch_size=500, cache_basename=None):
   """
   Returns a list of matched pairs of identifiers.
   Converts identifiers using above function 'get_uniprot_id_mapping_pairs'
