@@ -102,41 +102,6 @@ def batch_uniprot_id_mapping_pairs(
 
 
 
-def sequentially_convert_to_uniprot_id(seqids, cache_json=None):
-  """
-  This is the key function to convert an arbitary seqid to a
-  uniprot id. It only works for one seqid per url request, so
-  it is slow. But if you cannot transform your seqids so that
-  batch mapping can work, it is the only option. 
-
-  Since this is slow, it caches the results at every pass.
-
-  Returns a dictionary of the input seqids as keys. 
-  """
-  if cache_json is None or not os.path.isfile(cache_json):
-    mapping = {}
-  else:
-    mapping = read_json(cache_json)
-  for l in seqids:
-    seqid = l.split()[0]
-    if seqid not in mapping:
-      result = batch_uniprot_id_mapping_pairs(
-            'ACC+ID', 'ACC', ['?' + seqid])
-      if result:
-        mapping[seqid] = result[0][0]
-      else:
-        mapping[seqid] = "[null]"
-      if cache_json:
-        write_json(mapping, cache_json)
-    print seqid, "->", mapping[seqid]
-  seqids = mapping.keys()
-  for seqid in seqids:
-    if "[null]" in mapping[seqid]:
-      del mapping[seqid]
-  return mapping
-
-
-
 def parse_uniprot_txt_file(cache_txt):
   """
   Parses the text of metadata retrieved from uniprot.org.
