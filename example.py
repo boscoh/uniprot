@@ -16,41 +16,25 @@ pprint.pprint(seqids, indent=2)
 
 # Example 2 - batch read identifier mappings with
 # prespecified identifier types
-
-seqids = """
-NP_000508.1  NP_001018081.3
-""".split()
-
+seqids = "NP_000508.1  NP_001018081.3".split()
 pairs = uniprot.batch_uniprot_id_mapping_pairs(
   'P_REFSEQ_AC', 'ACC', seqids)
-
 pprint.pprint(pairs, indent=2)
+
 
 
 # Example 3 - sequential identifier mapping to UniProt 
 # identifiers using robust but slow method
-
-seqids = """
-EFG_MYCA1 YP_885981.1 CpC231_1796
-""".split()
-
-mapping = uniprot.sequentially_convert_to_uniprot_id(
-    seqids, 'cache.json')
-
-uniprot_seqids = mapping.values()
-
+# seqids = "EFG_MYCA1 YP_885981.1 CpC231_1796".split()
 
 # Example 4 - get UniProt metadata
-
+uniprot_seqids = [j for i,j in pairs]
 uniprot_data = uniprot.batch_uniprot_metadata(
-    uniprot_seqids, 'cache2.txt')
-
+    uniprot_seqids, 'metadata.cache')
 pprint.pprint(uniprot_data, indent=2)
-
-for l in open('cache2.txt'):
+for l in open('metadata.cache0.txt'):
   print l.strip()
-
-uniprot.write_fasta('example.output.fasta', uniprot_data, uniprot_seqids)
+uniprot.write_fasta('metadata.cache.fasta', uniprot_data, uniprot_seqids)
 
 
 # Example 5 - chaining commands to make your own

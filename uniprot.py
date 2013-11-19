@@ -283,6 +283,101 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   return results
 
 
+
+def parse_isoforms(text):
+  """
+  Returns a dictionary of uniprot_acc and entries.
+
+  Each entry contains:
+    - var_seq: the sequence variations in the file
+    - isoforms: the interpreted isoform sequences with
+                the seqids
+  """
+  tag = None
+  uniprot_data = {}
+  var_seq = None
+  in_isoform_section = False
+  isoform_id = None
+  for l in text.splitlines():
+    test_tag = l[:5].strip()
+    if test_tag and test_tag != tag:
+      tag = test_tag
+    line = l[5:].strip()
+    words = line.split()
+    if tag == "ID":
+      uniprot_id = words[0]
+      uniprot_data[uniprot_id] = {
+        'var_seqs': [],
+        'isoforms': {},
+        'sequence': '',
+      }
+    if tag == "SQ":
+      if words[0] != "SEQUENCE":
+        uniprot_data[uniprot_id]['sequence'] += ''.join(words)
+    if tag == 'FT':
+      if var_seq is not None and l[5] != ' ':
+        var_seq = None
+      if line.startswith('VAR_SEQ'):
+        var_seq = {
+          'i': int(words[1]),
+          'j': int(words[2]),
+          'block': ''
+        }
+        uniprot_data[uniprot_id]['var_seqs'].append(var_seq)
+      if var_seq is not None:
+        var_seq['block'] += l[34:]
+    if tag == 'CC':
+      if words[0] == '-!-':
+        if 'ALTERNATIVE' in words[1] and 'PRODUCTS' in words[2]:
+          in_isoform_section = True
+        else:
+          in_isoform_section = False
+      if in_isoform_section:
+        if words[0].startswith('Name'):
+          isoform_id = int(words[0][:-1].split('=')[1])
+        for word in words:
+          if word.startswith('IsoId='):
+            seqid = word[:-1].split('=')[1]
+            uniprot_data[uniprot_id]['isoforms'][isoform_id] = {
+              'seqid': seqid
+            }
+            break
+  for uniprot_id in uniprot_data:
+    var_seqs = uniprot_data[uniprot_id]['var_seqs']
+    isoforms = uniprot_data[uniprot_id]['isoforms']
+    original_sequence = uniprot_data[uniprot_id]['sequence']
+    for var_seq in var_seqs:
+      block = var_seq['block']
+      match = re.search(r'\(.*\)', block)
+      isoform_tokens = match.group()[1:-1].split()
+      isoform_ids = []
+      for i in range(len(isoform_tokens)):
+        if 'isoform' in isoform_tokens[i]:
+          isoform_ids.append(int(isoform_tokens[i+1]))
+      var_seq['isoform_ids'] = isoform_ids
+      if block.startswith('Missing'):
+        var_seq['deletion'] = True
+      else:
+        var_seq['deletion'] = False
+        transition = block.split('(')[0]
+        original, mutation = transition.split('->')
+        var_seq['sequence'] = original.strip()
+        assert len(var_seq['sequence']) == var_seq['j'] - var_seq['i'] + 1
+        var_seq['mutation'] = mutation.strip()
+    var_seqs.sort(key=lambda v:-v['i'])
+    for isoform_id in isoforms:
+      sequence = original_sequence
+      for var_seq in uniprot_data[uniprot_id]['var_seqs']:
+        if isoform_id in var_seq['isoform_ids']:
+          i = var_seq['i']-1
+          j = var_seq['j']
+          if var_seq['deletion']:
+            sequence = sequence[:i] + sequence[j:]
+          else:
+            sequence = sequence[:i] + var_seq['mutation'] + sequence[j:]
+      isoforms[isoform_id]['sequence'] = sequence      
+  return uniprot_data
+
 def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=500):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
