@@ -1,3 +1,6 @@
+from __future__ import print_function
+import sys
+import os
 import uniprot
 
 scrape = """
@@ -115,18 +118,40 @@ DrugBank  DRUGBANK_ID both
 GenomeRNAi  GENOMERNAI_ID both
 NextBio NEXTBIO_ID  both
 """
-
 id_types = []
 for line in scrape.splitlines():
   words = line.split()
   if words and words[-1] in ['both', 'to']:
     id_types.append(words[-2])
 
-seqid = 'YOR261C'
-for from_type in id_types:
-  pairs = uniprot.batch_uniprot_id_mapping_pairs(
-    from_type, "ACC", [seqid])
-  if pairs == []:
-    print seqid, '->', from_type, '-> fail'
+
+def analyze(seqid):
+  good_types = []
+  print("===> Analyzing", seqid)
+  for from_type in id_types:
+    pairs = uniprot.batch_uniprot_id_mapping_pairs(
+      from_type, "ACC", [seqid])
+    if pairs == []:
+      print(seqid, '->', from_type, '-> fail')
+    else:
+      print(seqid, '->', from_type, '->', pairs[0][1])
+      good_types.append(from_type)
+  print(seqid, 'is compatible with:', ' '.join(good_types))
+
+
+usage = """
+seqidtype.py works out the type of seqid at uniprot.org by
+brute-force matching a seqid against all seqid types
+
+python seqidtype.py seqid1 seqid2 seqid3 ...
+
+(Example: python seqidtype.py YOR261C)
+"""
+
+
+if __name__ == "__main__":
+  if len(sys.argv) == 1:
+    print(usage)
   else:
-    print seqid, '->', from_type, '->', pairs[0][1]
+    for seqid in sys.argv[1:]:
+      analyze(seqid)
