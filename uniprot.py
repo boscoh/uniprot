@@ -1,6 +1,5 @@
 import re
 import os
-import json
 import textwrap
 import time
 import StringIO
@@ -24,14 +23,6 @@ including the protein sequence.
 # Doing internet lookups is fraught with error, 
 # so caching to disk is recommended. Here's a
 # couple of helper functions to cache Python dictionaries.
-
-
-def read_json(cache_json):
-  return json.load(open(cache_json, 'rU'))
-
-
-def write_json(a_dict, cache_json, indent=2):
-  json.dump(a_dict, fp=open(cache_json, 'w'), indent=indent)
 
 
 def is_html(text):
@@ -83,7 +74,6 @@ def batch_uniprot_id_mapping_pairs(
   from_type and to_type can be obtained from:
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
-
   pairs = []
   i_seqid = 0
   if batch_size is None:
