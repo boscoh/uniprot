@@ -20,5 +20,5 @@ setup(
     license='GPLv3',
     install_requires=['requests'],
     py_modules=['uniprot',],
-    scripts=['setupidtype.py']
+    scripts=['seqidtype.py']
 )

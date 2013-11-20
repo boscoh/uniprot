@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 import os
 import uniprot
+import json
 
 scrape = """
 UniProtKB AC/ID ACC+ID  from
@@ -125,17 +126,27 @@ for line in scrape.splitlines():
     id_types.append(words[-2])
 
 
-def analyze(seqid):
-  good_types = []
+def analyze(seqid, cache_fname=None):
+  if cache_fname is not None and os.path.isfile(cache_fname):
+    cache = json.load(open(cache_fname))
+  else:
+    cache = { seqid: {} }
   print("===> Analyzing", seqid)
+  good_types = []
   for from_type in id_types:
-    pairs = uniprot.batch_uniprot_id_mapping_pairs(
-      from_type, "ACC", [seqid])
-    if pairs == []:
-      print(seqid, '->', from_type, '-> fail')
-    else:
-      print(seqid, '->', from_type, '->', pairs[0][1])
+    if from_type not in cache[seqid]:
+      pairs = uniprot.batch_uniprot_id_mapping_pairs(
+        from_type, "ACC", [seqid])
+      if pairs == []:
+        cache[seqid][from_type] = None
+      else:
+        cache[seqid][from_type] = pairs[0][1]
+      if cache_fname is not None:
+        json.dump(cache, open(cache_fname, 'w'))
+    if cache[seqid][from_type] is not None:
       good_types.append(from_type)
+    print('{}:{} -> {}'.format(seqid, from_type, cache[seqid][from_type]))
+
   print(seqid, 'is compatible with:', ' '.join(good_types))
 
 
@@ -154,4 +165,4 @@ if __name__ == "__main__":
     print(usage)
   else:
     for seqid in sys.argv[1:]:
-      analyze(seqid)
+      analyze(seqid, 'seqidtype.json')

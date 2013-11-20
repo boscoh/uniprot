@@ -1,7 +1,7 @@
 
 
-UNIPROT.PY
-==========
+# UNIPROT.PY
+
 
 This is my python library for dealing with sequence identifier
 mappings, which leverages the UniProt website http://uniprot.org,
@@ -24,14 +24,18 @@ There are various ways to access the mapping service,
 where each method has its pros and cons (speed vs. robustness).
 
 
-# Dependencies
+## Installation
 
-The requests.py library. Install using PyPi
-   
-     pip install requests
+The library `uniprot.py` only has one dependency, the wonderful requests.py library which wraps the truly dire httplib in standard Python library. To install:
+
+    >> pip install uniprot
+
+And if just to make sure:
+    
+    >> pip install requests 
 
 
-# Examples
+## Examples
 
 Before you run any of the examples, import the module:
 
@@ -53,7 +57,7 @@ If we have a bunch of sequence identifiers that cleanly maps to a known
 identifier type recognized by UniProt, we can use batch mode to
 map identifiers in groups of 100 at a time. It's very important
 that the type of the identifiers are specified. These can be
-looked up at <http://www.uniprot.org/faq/28#mapping-faq-table>. 
+looked up at <http://www.uniprot.org/faq/28#id_mapping_examples>. 
 
 In this example, we have some RefSeq protein identifiers
 (P_REFSEQ_AC) that we want to map to UniProt Accession
@@ -68,56 +72,65 @@ identifiers (ACC):
 
 ## Brute-force matching
 
-If we have a bunch of sequence identifiers that can't be recognized by
-the batch identifier-mapping service of UniProt (happens way more
-often than you'd think), you can use the sequential service
-which is much more forgiving. It does not need a prespecification
-of the identifier type. However, the tradeoff is that
-only one identifier can be looked up at a time, so it is
-excruciatingly slow:
+Let's say you a bunch of sequence identifiers that you can't recognize (happens quite a lot, no?), then you're not going to be able to get the correct uniprot accession id's to fetch uniprot metadata :(.
 
-    seqids = """
-    EFG_MYCA1 YP_885981.1 CAS1_BOVIN CpC231_1796
-    """.split()
+Never fear, there's an ugly brute-force method that you can use to figure out what uniprot sequence-id type that your seqids have. Included in the package is a python script called `seqidtype.py`, which should be installed as an executable script, on the command-line, just try:
 
-    mapping = uniprot.sequentially_convert_to_uniprot_id(
-        seqids, 'cache.json')
+    >> seqidtype.py YP_885981.1
 
-    pprint.pprint(mapping, indent=2)
+`seqidtype.py` will run through all the seqid types listed in <http://www.uniprot.org/faq/28#id_mapping_examples> and try to get a uniprot accession mapping. Matches will be found only if the seqid type matches. Thus, after running through 50 odd individual matches, you will get a list of relevant seqid types. The output should look something like:
 
-This function asks for an opitonal caching filename `cache.json` as parameter.
-This is because such queries are very temperamental - it
-depends on your network latency, as well as the good graces
-of uniprot.org itself. As such, the functions caches
-as much on disk as possible to avoid lost work.
+    ===> Analyzing YP_885981.1
+    Fetching 1 (ACC->ACC) seqid mappings ...
+    YP_885981.1 -> ACC -> None
+    Fetching 1 (ID->ACC) seqid mappings ...
+    YP_885981.1 -> ID -> None
+    . 
+    .
+    .
+    Fetching 1 (P_REFSEQ_AC->ACC) seqid mappings ...
+    YP_885981.1:P_REFSEQ_AC -> A0QSU3
+    .
+    .
+    .
+    YP_885981.1 is compatible with seqid type: P_REFSEQ_AC
+
+Since this is a laborious internet process, intermediate results are stored in the current directory under `seqidtype.json`. This may get big if you run the script a lot, and can be simply deleted. Once you have the seqid type in hand, you can now rerun the batch seqid mapping method.
 
 
 ## Getting protein sequence metadata
 
-If we have our list of uniprot seqids, we can then extract
-the metadata, which includes, for instance the sequence of the
-protein:
+If we have our list of seqids in uniprot acc format, we can extract
+the metadata of the proteins, including the sequence:protein:
 
     uniprot_seqids = 'A0QSU3 D9QCH6 A0QL36'.split()
     uniprot_data = uniprot.batch_uniprot_metadata(
-        uniprot_seqids, 'cache.txt')
+        uniprot_seqids, 'cache.basename')
     pprint.pprint(mapping, indent=2)
 
 Now `batch_uniprot_metadata` uses a simple uniprot text parser
-which only parses a small number of fields. 
+which only parses a small number of fields. The actual uniprot metadata
+is stored in files that begin with 'cache.basename*.txt', depending
+on how many different batches are required.
 
-Of course, you'd probably want to weigh in with your UniProt parser.
-Simply read in the cache.txt text file:
+Of course, you'd probably want to weigh in with your UniProt parser. If 
+there is only one batch done, then only one file needs to be read, 
+`cache.basename0.txt'. Simply read in this file:
 
-    for l in open('cache.txt'):
+    for l in open('cache.basename0.txt'):
       print l
 
-For instance, you might want to save the fasta sequences:
+One common thing you can do is to save the sequences in the metadata
+as a .fasta file. With the `uniprot_data` extracted from above, you
+can write the output as:
 
     uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
 
 
 ## Filtering undecipherable seqid's
+
+get_metadata_with_some_seqid_conversions(seqids, cache_fname=None)
+
 
 As a bioinformatician, you are probably given FASTA files with sequence identifiers
 from all sorts of different places. From these, you might extract an:

@@ -335,6 +335,8 @@ def parse_isoforms(text):
       isoforms[isoform_id]['sequence'] = sequence      
   return uniprot_data
 
+
+
 def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=500):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
