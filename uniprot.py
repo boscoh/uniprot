@@ -5,6 +5,8 @@ import time
 import StringIO
 import requests
 
+__version__ = '1.0a'
+
 """
 This is my uniprot python library. It provides a bunch of 
 routines to access the uniprot.org website's RESTful API.
