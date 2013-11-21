@@ -114,11 +114,11 @@ The heart of the function `get_metadata_with_some_seqid_conversions` uses patter
 
     # convert a few types into uniprot_ids
     id_types = [
-      (is_sgd, 'ordered-locus-tag', 'ENSEMBLGENOME_PRO_ID'),
-      (is_refseq, 'refseq', 'P_REFSEQ_AC'),
-      (is_refseq, 'refseq', 'REFSEQ_NT_ID'),
+      (is_sgd, 'locustag', 'ENSEMBLGENOME_PRO_ID'),
+      (is_refseq, 'refseqp', 'P_REFSEQ_AC'),
+      (is_refseq, 'refseqnt', 'REFSEQ_NT_ID'),
       (is_ensembl, 'ensembl', 'ENSEMBL_ID'),
-      (is_maybe_uniprot_id, 'uniprot-entity', 'ID')]
+      (is_maybe_uniprot_id, 'uniprotid', 'ID')]
     for is_id_fn, name, uniprot_mapping_type in id_types:
       probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname+'.'+name)
 
