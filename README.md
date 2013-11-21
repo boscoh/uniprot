@@ -53,7 +53,7 @@ To get metadata for sequences, we need to have a list of seqids in the Uniprot A
 
     uniprot_seqids = 'A0QSU3 D9QCH6 A0QL36'.split()
     uniprot_data = uniprot.batch_uniprot_metadata(
-        uniprot_seqids, 'cache.basename')
+        uniprot_seqids, 'cache')
     pprint.pprint(mapping, indent=2)
 
 The function `batch_uniprot_metadata` contains a simple parser that extracts a small number of fields into a Python dictionary, with the Uniprot ID as the dictionary key. You can carry further analysis on this dictionary. For example, you can write the sequences to a `.fasta` file using the convenience
@@ -63,14 +63,14 @@ function:
 
 The metadata contains information for the known isoforms of a protein, but this is expressed rather awkwardly as VAR_SEQ entries. Here is a function that reconstructs the isoform sequences from the metadata:
   
-    text = open('metadata.cache0.txt').read()
+    text = open('cache.0.txt').read()
     isoforms_dict = uniprot.parse_isoforms(text)
     pprint.pprint(isoforms_dict)
 
 If you would rather parse the metadata text yourself, the raw text is cached
 to `cache.basename*.txt` files:
 
-    for l in open('cache.basename0.txt'):
+    for l in open('cache.0.txt'):
       print l
 
 
