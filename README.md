@@ -110,7 +110,7 @@ Let's say you have a bunch of seqids of several different types. By chaining a b
     metadata = uniprot.get_metadata_with_some_seqid_conversions(
          seqids, 'cache')
 
-The heart of the function `get_metadata_with_some_seqid_conversions` uses pattern matching functions, such as to `is_ensembl` to identify ENSEMBL ids, as can be seen in this fragment:
+The heart of the function `get_metadata_with_some_seqid_conversions` uses pattern matching functions, such as `is_ensembl` to identify ENSEMBL ids, as can be seen in this fragment:
 
     # convert a few types into uniprot_ids
     id_types = [
