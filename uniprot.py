@@ -29,7 +29,7 @@ import time
 import StringIO
 import requests
 
-__version__ = '1.0a'
+
 
 """
 This is my uniprot python library. It provides a bunch of 
@@ -45,10 +45,6 @@ obtained, it allows the extraction of the relevant metadata,
 including the protein sequence.
 """
 
-
-# Doing internet lookups is fraught with error, 
-# so caching to disk is recommended. Here's a
-# couple of helper functions to cache Python dictionaries.
 
 
 def is_html(text):
