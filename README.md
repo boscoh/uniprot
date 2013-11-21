@@ -78,7 +78,7 @@ to `cache.basename*.txt` files:
 
 Unfortunately, you probably have been given some files where you can't recognize the seqid type. You are not going to be able to fetch the metadata unless you can map your seqid to the Uniprot Accession type.
 
-Never fear!  Included is `seqidtype.py`, an executable script that uses a  brute-force method approach to figure out the id type of a bunch of seqids. On the command-line:
+Never fear!  Included is `seqidtype.py`, an executable script that uses a  brute-force approach to figure out the id type of a bunch of seqids. On the command-line:
 
     >> seqidtype.py YP_885981.1
 
