@@ -7,7 +7,7 @@
 
 1. Map between types of protein seqids (sequence identifiers)
 
-2. Fetch metadata for proteins such as organism, the sequence and GO annotations.
+2. Fetch metadata for proteins such as organism, sequence and GO annotations.
 
 
 ## Installation
