@@ -1,0 +1,10 @@
+build
+dist
+test
+uniprot.egg-info
+cache*
+.DS_Store
+*pyc
+readme.html
+test-isoform
+*json
