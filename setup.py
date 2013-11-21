@@ -10,7 +10,7 @@ Docs at http://github.com/boscoh/uniprot.
 
 setup(
     name='uniprot',
-    version='1.0a',
+    version='1.0a1',
     author='Bosco Ho',
     author_email='boscoh@gmail.com',
     url='http://github.com/boscoh/uniprot',
