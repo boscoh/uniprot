@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from setuptools import setup
-import uniprot
 
 
 description = \
@@ -11,11 +10,11 @@ Docs at http://github.com/boscoh/uniprot.
 
 setup(
     name='uniprot',
-    version=uniprot.__version__,
+    version='1.0a',
     author='Bosco Ho',
     author_email='boscoh@gmail.com',
     url='http://github.com/boscoh/uniprot',
-    description='retrieve protein sequnece identifiers and metadata from uniprot.org',
+    description='retrieve protein sequence identifiers and metadata from uniprot.org',
     long_description=description,
     license='GPLv3',
     install_requires=['requests'],
