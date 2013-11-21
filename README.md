@@ -67,8 +67,7 @@ The metadata contains information for the known isoforms of a protein, but this 
     isoforms_dict = uniprot.parse_isoforms(text)
     pprint.pprint(isoforms_dict)
 
-If you would rather parse the metadata text yourself, the raw text is cached
-to `cache.basename*.txt` files:
+If you would rather parse the metadata text yourself, the raw text is cached to `cache.basename*.txt` files:
 
     for l in open('cache.0.txt'):
       print l
