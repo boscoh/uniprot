@@ -77,11 +77,11 @@ If you would rather parse the metadata text yourself, the raw text is cached to 
 
 Unfortunately, you probably have been given some files where you can't recognize the seqid type. You are not going to be able to fetch the metadata unless you can map your seqid to the Uniprot Accession type.
 
-Never fear!  Included is `seqidtype.py`, an executable script that uses a  brute-force approach to figure out the id type of a bunch of seqids. On the command-line:
+Never fear!  Included is `seqidtype`, an executable script that uses a  brute-force approach to figure out the id type of a bunch of seqids. On the command-line:
 
-    >> seqidtype.py YP_885981.1
+    >> seqidtype YP_885981.1
 
-`seqidtype.py` will attempt to map a seqid against all the seqid types listed in <http://www.uniprot.org/faq/28#id_mapping_examples>. After running through all 50 or so seqid types, you will get a list of working seqid types, which should look something like:
+`seqidtype` will attempt to map a seqid against all the seqid types listed in <http://www.uniprot.org/faq/28#id_mapping_examples>. After running through all 50 or so seqid types, you will get a list of working seqid types, which should look something like:
 
     ===> Analyzing YP_885981.1
     Fetching 1 (ACC->ACC) seqid mappings ...

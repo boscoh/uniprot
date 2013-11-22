@@ -18,5 +18,5 @@ setup(
     license='BSD',
     install_requires=['requests'],
     py_modules=['uniprot'],
-    scripts=['seqidtype.py']
+    scripts=['bin/seqidtype']
 )
