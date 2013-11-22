@@ -15,7 +15,7 @@ setup(
     url='http://github.com/boscoh/uniprot',
     description='retrieve protein sequence identifiers and metadata from http://uniprot.org',
     long_description=description,
-    license='GPLv3',
+    license='BSD',
     install_requires=['requests'],
     py_modules=['uniprot'],
     scripts=['seqidtype.py']
