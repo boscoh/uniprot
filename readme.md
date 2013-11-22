@@ -61,16 +61,18 @@ function:
 
     uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
 
-The metadata contains information for the known isoforms of a protein, but this is expressed rather awkwardly as VAR_SEQ entries. Here is a function that reconstructs the isoform sequences from the metadata:
-  
-    text = open('cache.0.txt').read()
-    isoforms_dict = uniprot.parse_isoforms(text)
-    pprint.pprint(isoforms_dict)
-
 If you would rather parse the metadata text yourself, the raw text is cached to `cache.basename*.txt` files:
 
     for l in open('cache.0.txt'):
       print l
+
+### Extracting isoform sequences
+
+The Uniprot metadata contains information for the known isoforms of a protein, but this is expressed rather awkwardly as VAR_SEQ entries. Here is a function that reconstructs the isoform sequences from the raw metadata text:
+  
+    text = open('cache.0.txt').read()
+    isoforms_dict = uniprot.parse_isoforms(text)
+    pprint.pprint(isoforms_dict)
 
 
 ### Brute-force seqid-type matching
