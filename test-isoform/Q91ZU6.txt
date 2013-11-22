@@ -1,0 +1,735 @@
+ID   DYST_MOUSE              Reviewed;        7389 AA.
+AC   Q91ZU6; Q1KP04; Q3I6J6; Q60824; Q60845; Q8K5D4; Q91ZU7; Q91ZU8;
+AC   Q9WU50;
+DT   30-APR-2003, integrated into UniProtKB/Swiss-Prot.
+DT   01-DEC-2001, sequence version 1.
+DT   13-NOV-2013, entry version 114.
+DE   RecName: Full=Dystonin;
+DE   AltName: Full=Bullous pemphigoid antigen 1;
+DE            Short=BPA;
+DE   AltName: Full=Dystonia musculorum protein;
+DE   AltName: Full=Hemidesmosomal plaque protein;
+DE   AltName: Full=Microtubule actin cross-linking factor 2;
+GN   Name=Dst; Synonyms=Bpag1, Macf2;
+OS   Mus musculus (Mouse).
+OC   Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+OC   Mammalia; Eutheria; Euarchontoglires; Glires; Rodentia; Sciurognathi;
+OC   Muroidea; Muridae; Murinae; Mus; Mus.
+OX   NCBI_TaxID=10090;
+RN   [1]
+RP   NUCLEOTIDE SEQUENCE [MRNA] (ISOFORMS 1; 2 AND 5), TISSUE SPECIFICITY,
+RP   DEVELOPMENTAL STAGE, AND ALTERNATIVE SPLICING.
+RC   STRAIN=BALB/c; TISSUE=Epithelium, Muscle, and Neuron;
+RX   PubMed=11514586; DOI=10.1083/jcb.200012098;
+RA   Leung C.L., Zheng M., Prater S.M., Liem R.K.H.;
+RT   "The BPAG1 locus: alternative splicing produces multiple isoforms with
+RT   distinct cytoskeletal linker domains, including predominant isoforms
+RT   in neurons and muscles.";
+RL   J. Cell Biol. 154:691-697(2001).
+RN   [2]
+RP   NUCLEOTIDE SEQUENCE [MRNA] OF 1-511 (ISOFORM 2), PARTIAL NUCLEOTIDE
+RP   SEQUENCE [MRNA] (ISOFORM 6), TISSUE SPECIFICITY, AND DEVELOPMENTAL
+RP   STAGE.
+RC   TISSUE=Brain;
+RX   PubMed=7670468; DOI=10.1038/ng0795-301;
+RA   Brown A., Bernier G., Mathieu M., Rossant J., Kothary R.;
+RT   "The mouse dystonia musculorum gene is a neural isoform of bullous
+RT   pemphigoid antigen 1.";
+RL   Nat. Genet. 10:301-306(1995).
+RN   [3]
+RP   NUCLEOTIDE SEQUENCE [MRNA] OF 1-304 (ISOFORM 6), ALTERNATIVE SPLICING
+RP   (ISOFORMS 2 AND 6), AND SUBCELLULAR LOCATION (ISOFORMS 2 AND 6).
+RC   STRAIN=C3H;
+RX   PubMed=16289082; DOI=10.1016/j.yexcr.2005.10.002;
+RA   Young K.G., Pinheiro B., Kothary R.;
+RT   "A Bpag1 isoform involved in cytoskeletal organization surrounding the
+RT   nucleus.";
+RL   Exp. Cell Res. 312:121-134(2006).
+RN   [4]
+RP   NUCLEOTIDE SEQUENCE [MRNA] OF 1-270 (ISOFORM 7), ALTERNATIVE SPLICING
+RP   (ISOFORMS 1; 6 AND 7), FUNCTION OF ISOFORMS 1; 6 AND 7,
+RP   PALMITOYLATION, MYRISTOYLATION, MUTAGENESIS, SUBCELLULAR LOCATION, AND
+RP   TISSUE SPECIFICITY.
+RC   STRAIN=C57BL/6 X CBA;
+RX   PubMed=16797530; DOI=10.1016/j.yexcr.2006.04.025;
+RA   Jefferson J.J., Leung C.L., Liem R.K.;
+RT   "Dissecting the sequence specific functions of alternative N-terminal
+RT   isoforms of mouse bullous pemphigoid antigen 1.";
+RL   Exp. Cell Res. 312:2712-2725(2006).
+RN   [5]
+RP   PROTEIN SEQUENCE OF 580-584; 1043-1047 AND 1053-1057, AND X-RAY
+RP   CRYSTALLOGRAPHY (3.0 ANGSTROMS) OF 580-803.
+RX   PubMed=17161423; DOI=10.1016/j.jmb.2006.11.036;
+RA   Jefferson J.J., Ciatto C., Shapiro L., Liem R.K.;
+RT   "Structural analysis of the plakin domain of bullous pemphigoid
+RT   antigen1 (BPAG1) suggests that plakins are members of the spectrin
+RT   superfamily.";
+RL   J. Mol. Biol. 366:244-257(2007).
+RN   [6]
+RP   NUCLEOTIDE SEQUENCE [LARGE SCALE MRNA] OF 6693-7389 (ISOFORM 3), AND
+RP   NUCLEOTIDE SEQUENCE [LARGE SCALE MRNA] OF 6870-7389 (ISOFORM 4).
+RC   STRAIN=C57BL/6J; TISSUE=Fetal skin, and Fetal spinal cord;
+RX   PubMed=16141072; DOI=10.1126/science.1112014;
+RA   Carninci P., Kasukawa T., Katayama S., Gough J., Frith M.C., Maeda N.,
+RA   Oyama R., Ravasi T., Lenhard B., Wells C., Kodzius R., Shimokawa K.,
+RA   Bajic V.B., Brenner S.E., Batalov S., Forrest A.R., Zavolan M.,
+RA   Davis M.J., Wilming L.G., Aidinis V., Allen J.E.,
+RA   Ambesi-Impiombato A., Apweiler R., Aturaliya R.N., Bailey T.L.,
+RA   Bansal M., Baxter L., Beisel K.W., Bersano T., Bono H., Chalk A.M.,
+RA   Chiu K.P., Choudhary V., Christoffels A., Clutterbuck D.R.,
+RA   Crowe M.L., Dalla E., Dalrymple B.P., de Bono B., Della Gatta G.,
+RA   di Bernardo D., Down T., Engstrom P., Fagiolini M., Faulkner G.,
+RA   Fletcher C.F., Fukushima T., Furuno M., Futaki S., Gariboldi M.,
+RA   Georgii-Hemming P., Gingeras T.R., Gojobori T., Green R.E.,
+RA   Gustincich S., Harbers M., Hayashi Y., Hensch T.K., Hirokawa N.,
+RA   Hill D., Huminiecki L., Iacono M., Ikeo K., Iwama A., Ishikawa T.,
+RA   Jakt M., Kanapin A., Katoh M., Kawasawa Y., Kelso J., Kitamura H.,
+RA   Kitano H., Kollias G., Krishnan S.P., Kruger A., Kummerfeld S.K.,
+RA   Kurochkin I.V., Lareau L.F., Lazarevic D., Lipovich L., Liu J.,
+RA   Liuni S., McWilliam S., Madan Babu M., Madera M., Marchionni L.,
+RA   Matsuda H., Matsuzawa S., Miki H., Mignone F., Miyake S., Morris K.,
+RA   Mottagui-Tabar S., Mulder N., Nakano N., Nakauchi H., Ng P.,
+RA   Nilsson R., Nishiguchi S., Nishikawa S., Nori F., Ohara O.,
+RA   Okazaki Y., Orlando V., Pang K.C., Pavan W.J., Pavesi G., Pesole G.,
+RA   Petrovsky N., Piazza S., Reed J., Reid J.F., Ring B.Z., Ringwald M.,
+RA   Rost B., Ruan Y., Salzberg S.L., Sandelin A., Schneider C.,
+RA   Schoenbach C., Sekiguchi K., Semple C.A., Seno S., Sessa L., Sheng Y.,
+RA   Shibata Y., Shimada H., Shimada K., Silva D., Sinclair B.,
+RA   Sperling S., Stupka E., Sugiura K., Sultana R., Takenaka Y., Taki K.,
+RA   Tammoja K., Tan S.L., Tang S., Taylor M.S., Tegner J., Teichmann S.A.,
+RA   Ueda H.R., van Nimwegen E., Verardo R., Wei C.L., Yagi K.,
+RA   Yamanishi H., Zabarovsky E., Zhu S., Zimmer A., Hide W., Bult C.,
+RA   Grimmond S.M., Teasdale R.D., Liu E.T., Brusic V., Quackenbush J.,
+RA   Wahlestedt C., Mattick J.S., Hume D.A., Kai C., Sasaki D., Tomaru Y.,
+RA   Fukuda S., Kanamori-Katayama M., Suzuki M., Aoki J., Arakawa T.,
+RA   Iida J., Imamura K., Itoh M., Kato T., Kawaji H., Kawagashira N.,
+RA   Kawashima T., Kojima M., Kondo S., Konno H., Nakano K., Ninomiya N.,
+RA   Nishio T., Okada M., Plessy C., Shibata K., Shiraki T., Suzuki S.,
+RA   Tagami M., Waki K., Watahiki A., Okamura-Oho Y., Suzuki H., Kawai J.,
+RA   Hayashizaki Y.;
+RT   "The transcriptional landscape of the mammalian genome.";
+RL   Science 309:1559-1563(2005).
+RN   [7]
+RP   PARTIAL NUCLEOTIDE SEQUENCE [MRNA] (ISOFORM 5), FUNCTION, AND
+RP   INTERACTION WITH PRPH.
+RC   STRAIN=BALB/c;
+RX   PubMed=9971739; DOI=10.1083/jcb.144.3.435;
+RA   Leung C.L., Sun D., Liem R.K.;
+RT   "The intermediate filament protein peripherin is the specific
+RT   interaction partner of mouse BPAG1-n (dystonin) in neurons.";
+RL   J. Cell Biol. 144:435-446(1999).
+RN   [8]
+RP   PARTIAL NUCLEOTIDE SEQUENCE [MRNA] (ISOFORM 5).
+RC   STRAIN=Swiss Webster / NIH;
+RA   Kubo Y., Ohba M., Iwashita S.;
+RT   "Molecular network in NGF-mediated neural differentiation.";
+RL   Submitted (MAY-2002) to the EMBL/GenBank/DDBJ databases.
+RN   [9]
+RP   ALTERNATIVE SPLICING (ISOFORM 5), DISRUPTION PHENOTYPE, SUBCELLULAR
+RP   LOCATION (ISOFORM 5), AND TISSUE SPECIFICITY.
+RX   PubMed=7736575; DOI=10.1016/0092-8674(95)90333-X;
+RA   Guo L., Degenstein L., Dowling J., Yu Q.C., Wollmann R., Perman B.,
+RA   Fuchs E.;
+RT   "Gene targeting of BPAG1: abnormalities in mechanical strength and
+RT   cell migration in stratified epithelia and neurologic degeneration.";
+RL   Cell 81:233-243(1995).
+RN   [10]
+RP   ALTERNATIVE SPLICING (ISOFORMS 5 AND 6), SUBCELLULAR LOCATION
+RP   (ISOFORMS 5 AND 6), AND TISSUE SPECIFICITY.
+RX   PubMed=8752219; DOI=10.1016/S0092-8674(00)80138-5;
+RA   Yang Y., Dowling J., Yu Q.C., Kouklis P., Cleveland D.W., Fuchs E.;
+RT   "An essential cytoskeletal linker protein connecting actin
+RT   microfilaments to intermediate filaments.";
+RL   Cell 86:655-665(1996).
+RN   [11]
+RP   DISRUPTION PHENOTYPE.
+RX   PubMed=10428034; DOI=10.1016/S0092-8674(00)81017-X;
+RA   Yang Y., Bauer C., Strasser G., Wollman R., Julien J.P., Fuchs E.;
+RT   "Integrators of the cytoskeleton that stabilize microtubules.";
+RL   Cell 98:229-238(1999).
+RN   [12]
+RP   INTERACTION WITH DES, AND DISRUPTION PHENOTYPE.
+RX   PubMed=10357897; DOI=10.1006/dbio.1999.9263;
+RA   Dalpe G., Mathieu M., Comtois A., Zhu E., Wasiak S., De Repentigny Y.,
+RA   Leclerc N., Kothary R.;
+RT   "Dystonin-deficient mice exhibit an intrinsic muscle weakness and an
+RT   instability of skeletal muscle cytoarchitecture.";
+RL   Dev. Biol. 210:367-380(1999).
+RN   [13]
+RP   FUNCTION, AND DISRUPTION PHENOTYPE.
+RX   PubMed=14581450; DOI=10.1083/jcb.200306075;
+RA   Liu J.J., Ding J., Kowal A.S., Nardine T., Allen E., Delcroix J.D.,
+RA   Wu C., Mobley W., Fuchs E., Yang Y.;
+RT   "BPAG1n4 is essential for retrograde axonal transport in sensory
+RT   neurons.";
+RL   J. Cell Biol. 163:223-229(2003).
+RN   [14]
+RP   ALTERNATIVE SPLICING (ISOFORMS 2; 5 AND 6), HOMODIMERIZATION,
+RP   MUTAGENESIS OF ARG-1385 AND ARG-1386, SUBCELLULAR LOCATION, AND TISSUE
+RP   SPECIFICITY.
+RX   PubMed=14576348; DOI=10.1242/jcs.00764;
+RA   Young K.G., Pool M., Kothary R.;
+RT   "Bpag1 localization to actin filaments and to the nucleus is regulated
+RT   by its N-terminus.";
+RL   J. Cell Sci. 116:4543-4555(2003).
+RN   [15]
+RP   IDENTIFICATION BY MASS SPECTROMETRY [LARGE SCALE ANALYSIS].
+RC   TISSUE=Brain;
+RX   PubMed=16452087; DOI=10.1074/mcp.T500041-MCP200;
+RA   Trinidad J.C., Specht C.G., Thalhammer A., Schoepfer R.,
+RA   Burlingame A.L.;
+RT   "Comprehensive identification of phosphorylation sites in postsynaptic
+RT   density preparations.";
+RL   Mol. Cell. Proteomics 5:914-922(2006).
+RN   [16]
+RP   IDENTIFICATION BY MASS SPECTROMETRY [LARGE SCALE ANALYSIS].
+RC   TISSUE=Liver;
+RX   PubMed=17242355; DOI=10.1073/pnas.0609836104;
+RA   Villen J., Beausoleil S.A., Gerber S.A., Gygi S.P.;
+RT   "Large-scale phosphorylation analysis of mouse liver.";
+RL   Proc. Natl. Acad. Sci. U.S.A. 104:1488-1493(2007).
+RN   [17]
+RP   ALTERNATIVE SPLICING (ISOFORM 6), INTERACTION WITH SYNE3, SUBCELLULAR
+RP   LOCATION, AND TISSUE SPECIFICITY.
+RX   PubMed=18638474; DOI=10.1016/j.yexcr.2008.06.021;
+RA   Young K.G., Kothary R.;
+RT   "Dystonin/Bpag1 is a necessary endoplasmic reticulum/nuclear envelope
+RT   protein in sensory neurons.";
+RL   Exp. Cell Res. 314:2750-2761(2008).
+RN   [18]
+RP   ALTERNATIVE SPLICING (ISOFORMS 1 AND 2), INTERACTION WITH PLEC,
+RP   SUBCELLULAR LOCATION (ISOFORMS 1 AND 2), AND TISSUE SPECIFICITY.
+RX   PubMed=19932097; DOI=10.1016/j.yexcr.2009.11.010;
+RA   Steiner-Champliaud M.F., Schneider Y., Favre B., Paulhe F.,
+RA   Praetzel-Wunder S., Faulkner G., Konieczny P., Raith M., Wiche G.,
+RA   Adebola A., Liem R.K., Langbein L., Sonnenberg A., Fontao L.,
+RA   Borradori L.;
+RT   "BPAG1 isoform-b: complex distribution pattern in striated and heart
+RT   muscle and association with plectin and alpha-actinin.";
+RL   Exp. Cell Res. 316:297-313(2010).
+RN   [19]
+RP   ALTERNATIVE SPLICING (ISOFORM 2), FUNCTION OF ISOFORM 2, SUBCELLULAR
+RP   LOCATION (ISOFORM 2), AND TISSUE SPECIFICITY.
+RX   PubMed=20209123; DOI=10.1371/journal.pone.0009465;
+RA   Boyer J.G., Bhanot K., Kothary R., Boudreau-Lariviere C.;
+RT   "Hearts of dystonia musculorum mice display normal morphological and
+RT   histological features but show signs of cardiac stress.";
+RL   PLoS ONE 5:E9465-E9465(2010).
+CC   -!- FUNCTION: Cytoskeletal linker protein. Acts as an integrator of
+CC       intermediate filaments, actin and microtubule cytoskeleton
+CC       networks. Required for anchoring either intermediate filaments to
+CC       the actin cytoskeleton in neural and muscle cells or keratin-
+CC       containing intermediate filaments to hemidesmosomes in epithelial
+CC       cells. The proteins may self-aggregate to form filaments or a two-
+CC       dimensional mesh. May regulate the organization and stability of
+CC       the microtubule network of sensory neurons to allow axonal
+CC       transport.
+CC   -!- FUNCTION: Isoform 5: plays a structural role in the assembly of
+CC       hemidesmosomes of epithelial cells; anchors keratin-containing
+CC       intermediate filaments to the inner plaque of hemidesmosomes.
+CC       Required for the regulation of keratinocyte polarity and motility;
+CC       mediates integrin ITGB4 regulation of RAC1 activity.
+CC   -!- FUNCTION: Isoform 6: required for bundling actin filaments around
+CC       the nucleus.
+CC   -!- SUBUNIT: Homodimer. Interacts with MAPRE1; probably required for
+CC       targeting to the growing microtubule plus ends. Isoform 2
+CC       interacts (via N-terminus) with ACTN2. Isoform 2 interacts (via N-
+CC       terminus) with PLEC (via N-terminus). Isoform 5 interacts (via N-
+CC       terminus) with COL17A1 (via cytoplasmic region). Isoform 5
+CC       interacts (via N-terminus) with ITGB4 isoform beta-4a (via
+CC       cytoplasmic region). Isoform 5 interacts (via N-terminus) with
+CC       ERBB2IP (via C-terminus). Isoform 5 associates (via C-terminal)
+CC       with KRT5-KRT14 (via rod region) intermadiate filaments of
+CC       keratins (By similarity). Isoform 2 and isoform 6 can homodimerize
+CC       (via N-terminus). Isoform 2 interacts (via N-terminus) with PLEC
+CC       (via N-terminus). Interacts with the neuronal intermediate
+CC       filament protein, PRPH. Interacts with DES. Interacts with SYNE3.
+CC   -!- INTERACTION:
+CC       P21807:Prph (xeno); NbExp=3; IntAct=EBI-446159, EBI-446227;
+CC   -!- SUBCELLULAR LOCATION: Cytoplasm, cytoskeleton. Cell projection,
+CC       axon. Membrane. Note=Associates with axonal microtubules at the
+CC       growing distal tip and intermediate filaments, but not with actin
+CC       cytoskeleton, in sensory neurons (By similarity). Associates with
+CC       intermediate filaments, acin and microtubule cytoskeletons.
+CC       Localizes to actin stress fibers and to actin-rich ruffling at the
+CC       cortex of cells.
+CC   -!- SUBCELLULAR LOCATION: Isoform 1: Cytoplasm, cytoskeleton.
+CC       Note=Colocalizes both cortical and cytoplasmic actin filaments.
+CC   -!- SUBCELLULAR LOCATION: Isoform 2: Cell membrane, sarcolemma.
+CC       Cytoplasm, myofibril, sarcomere, Z line. Cytoplasm, myofibril,
+CC       sarcomere, H zone. Cytoplasm, cytoskeleton. Note=Localizes to
+CC       microtubules and actin microfilaments throughout the cytoplasm and
+CC       at focal contact attachments at the plasma membrane.
+CC   -!- SUBCELLULAR LOCATION: Isoform 5: Cytoplasm, cytoskeleton. Cell
+CC       junction, hemidesmosome. Note=Colocalizes with the epidermal KRT5-
+CC       KRT14 intermediate filaments network of keratins. Colocalizes with
+CC       ITGB4 at the leading edge of migrating keratinocytes (By
+CC       similarity). Localizes to actin and intermediate filaments
+CC       cytoskeletons.
+CC   -!- SUBCELLULAR LOCATION: Isoform 6: Nucleus. Nucleus envelope.
+CC       Membrane; Single-pass membrane protein. Endoplasmic reticulum
+CC       membrane; Single-pass membrane protein. Cytoplasm, cytoskeleton.
+CC       Note=Associates with actin cytoskeleton in sensory neurons (By
+CC       similarity). Localizes to actin and intermediate filaments
+CC       cytoskeletons. Localizes to central actin stress fibers around the
+CC       nucleus and is excluded form focal contact sites in myoblast
+CC       cells. Translocates to the nucleus.
+CC   -!- SUBCELLULAR LOCATION: Isoform 7: Cytoplasm, cytoskeleton.
+CC       Cytoplasm, cell cortex. Cell membrane; Lipid-anchor.
+CC   -!- ALTERNATIVE PRODUCTS:
+CC       Event=Alternative promoter usage, Alternative splicing; Named isoforms=7;
+CC       Name=2; Synonyms=BPAG1-b, BPAG1a1, dystonin-1;
+CC         IsoId=Q91ZU6-1; Sequence=Displayed;
+CC       Name=1; Synonyms=BPAG1-a, BPAG1a2;
+CC         IsoId=Q91ZU6-2; Sequence=VSP_041549;
+CC       Name=3;
+CC         IsoId=Q91ZU6-3; Sequence=VSP_041550, VSP_041551, VSP_041552;
+CC         Note=No experimental confirmation available;
+CC       Name=4;
+CC         IsoId=Q91ZU6-4; Sequence=VSP_041551, VSP_041552;
+CC         Note=No experimental confirmation available;
+CC       Name=5; Synonyms=BPAG1-e;
+CC         IsoId=Q91ZU6-5; Sequence=VSP_041541, VSP_041547, VSP_041548;
+CC         Note=Ref.7 (BAB93448) sequence is in conflict in positions:
+CC         2325:G->D, 2416:A->T, 2530:K->Q;
+CC       Name=6; Synonyms=BPAG1n, BPAG1-n1, BPAG1-n2, BPAG1a2, dystonin-2;
+CC         IsoId=Q91ZU6-6; Sequence=VSP_041543, VSP_041546;
+CC         Note=Incomplete sequence. Transmembrane protein (helical
+CC         transmembrane domain from amino acid 18 to 38). Ref.2 (AAC52231)
+CC         sequence differs from that shown due to a frameshift in position
+CC         51. Ref.2 (AAC52231) sequence is in conflict in position:
+CC         101:E->K. Contains a phosphoserine at position 163. Contains a
+CC         phosphoserine at position 165. Contains a phosphoserine at
+CC         position 167 (By similarity);
+CC       Name=7; Synonyms=BPAG1a3;
+CC         IsoId=Q91ZU6-8; Sequence=VSP_041542, VSP_041544, VSP_041545;
+CC         Note=Incomplete sequence. Probably myristoylated on Gly-2.
+CC         Probably S-palmitoylated on Cys-5 and Cys-7. Mutagenesis of
+CC         Gly-2 to Ala inhibits cortical localization. Mutagenesis of
+CC         Cys-5 to Ser inhibits cortical localization. Mutagenesis of
+CC         Cys-7 to Ser inhibits cortical localization;
+CC   -!- TISSUE SPECIFICITY: Isoform 1 and 2 are expressed in striated and
+CC       heart muscle cells. Isoform 5 is expressed in the skin. Isoform 6
+CC       is expressed in sensory neural cells of the dorsal root ganglion
+CC       and with low level in the skin (at protein level). Isoform 1 is
+CC       expressed predominantly in the brain and spinal cord with low
+CC       levels in the heart. Isoform 2 is predominantly expressed in
+CC       muscle and heart and with low levels in the brain. Isoform 5 is
+CC       expressed in the skin and with low levels in myoblast cells.
+CC       Isoform 6 is expressed in neurons. Isoform 7 is expressed in lung
+CC       and with low levels in the brain.
+CC   -!- DEVELOPMENTAL STAGE: Isoform 1 is the major form expressed in the
+CC       dorsal root ganglia at 14.5 dpc. Isoform 2 is predominantly
+CC       expressed in the myocardium, skeletal muscles, bone cartilage and
+CC       epithelia of the tongue at 14.5 dpc. Isoform 5 is expressed at
+CC       high levels in the epidermis and mucosal epithelia of the
+CC       digestive tracts at 14.5 dpc.
+CC   -!- DOMAIN: Its association with epidermal and simple keratins is
+CC       dependent on the tertiary structure induced by heterodimerization
+CC       of these intermedaite filaments proteins and most likely involves
+CC       recognition sites located in the rod domain of these keratins.
+CC   -!- DOMAIN: The microtubule tip localization signal (MtLS) motif;
+CC       mediates interaction with MAPRE1 and targeting to the growing
+CC       microtubule plus ends (By similarity).
+CC   -!- DISRUPTION PHENOTYPE: Mice show progressive deterioration in motor
+CC       function and sensory neurodegeneration. Exhibit axonal swellings
+CC       packed with disorganized intermediate filaments (IFs) and
+CC       microtubules. Show poorly defined Z lines and display a reduction
+CC       in sarcomere length. Have increased accumulation of vesicles and
+CC       severely disrupted retrograde axonal transport. In stratified
+CC       epithelia, hemidesmosomes are normal but they lack the inner plate
+CC       and have no cytoskeleton attached.
+CC   -!- SIMILARITY: Belongs to the plakin or cytolinker family.
+CC   -!- SIMILARITY: Contains 1 actin-binding domain.
+CC   -!- SIMILARITY: Contains 2 CH (calponin-homology) domains.
+CC   -!- SIMILARITY: Contains 2 EF-hand domains.
+CC   -!- SIMILARITY: Contains 1 GAR domain.
+CC   -!- SIMILARITY: Contains 5 plectin repeats.
+CC   -!- SIMILARITY: Contains 1 SH3 domain.
+CC   -!- SIMILARITY: Contains 19 spectrin repeats.
+CC   -----------------------------------------------------------------------
+CC   Copyrighted by the UniProt Consortium, see http://www.uniprot.org/terms
+CC   Distributed under the Creative Commons Attribution-NoDerivs License
+CC   -----------------------------------------------------------------------
+DR   EMBL; AF396877; AAK83382.1; -; mRNA.
+DR   EMBL; AF396878; AAK83383.1; -; mRNA.
+DR   EMBL; AF396879; AAK83384.1; -; mRNA.
+DR   EMBL; U22452; AAC52230.1; -; mRNA.
+DR   EMBL; U25158; AAC52231.1; ALT_FRAME; mRNA.
+DR   EMBL; DQ023311; AAY46942.1; -; mRNA.
+DR   EMBL; DQ463750; ABF00406.1; -; mRNA.
+DR   EMBL; AK051626; BAC34695.1; -; mRNA.
+DR   EMBL; AK037206; BAC29753.1; -; mRNA.
+DR   EMBL; AF115383; AAD22959.1; -; mRNA.
+DR   EMBL; AB085694; BAB93448.1; -; mRNA.
+DR   IPI; IPI00131432; -.
+DR   IPI; IPI00230689; -.
+DR   IPI; IPI00230690; -.
+DR   IPI; IPI00230692; -.
+DR   IPI; IPI00284272; -.
+DR   IPI; IPI00623531; -.
+DR   IPI; IPI01019259; -.
+DR   PIR; A60776; A60776.
+DR   PIR; I49290; I49290.
+DR   PIR; I49298; I49298.
+DR   UniGene; Mm.336625; -.
+DR   UniGene; Mm.478284; -.
+DR   UniGene; Mm.487428; -.
+DR   PDB; 2IAK; X-ray; 3.00 A; A=580-803.
+DR   PDBsum; 2IAK; -.
+DR   ProteinModelPortal; Q91ZU6; -.
+DR   SMR; Q91ZU6; 31-255, 268-479, 583-1051, 1553-1927, 4476-4570, 5208-5532, 6115-6480, 7098-7170.
+DR   IntAct; Q91ZU6; 5.
+DR   MINT; MINT-1861530; -.
+DR   STRING; 10090.ENSMUSP00000095392; -.
+DR   REPRODUCTION-2DPAGE; IPI00230689; -.
+DR   REPRODUCTION-2DPAGE; IPI00230690; -.
+DR   REPRODUCTION-2DPAGE; IPI00284272; -.
+DR   PaxDb; Q91ZU6; -.
+DR   PRIDE; Q91ZU6; -.
+DR   UCSC; uc007aof.1; mouse.
+DR   MGI; MGI:104627; Dst.
+DR   eggNOG; COG5069; -.
+DR   HOVERGEN; HBG031127; -.
+DR   ChEMBL; CHEMBL2176789; -.
+DR   ChiTaRS; DST; mouse.
+DR   EvolutionaryTrace; Q91ZU6; -.
+DR   NextBio; 284082; -.
+DR   PRO; PR:Q91ZU6; -.
+DR   CleanEx; MM_DST; -.
+DR   Genevestigator; Q91ZU6; -.
+DR   GO; GO:0015629; C:actin cytoskeleton; IDA:MGI.
+DR   GO; GO:0030424; C:axon; IEA:UniProtKB-SubCell.
+DR   GO; GO:0005938; C:cell cortex; IEA:UniProtKB-SubCell.
+DR   GO; GO:0016023; C:cytoplasmic membrane-bounded vesicle; ISO:MGI.
+DR   GO; GO:0005789; C:endoplasmic reticulum membrane; IDA:UniProtKB.
+DR   GO; GO:0005925; C:focal adhesion; IDA:UniProtKB.
+DR   GO; GO:0031673; C:H zone; IDA:UniProtKB.
+DR   GO; GO:0030056; C:hemidesmosome; IDA:MGI.
+DR   GO; GO:0016021; C:integral to membrane; IEA:UniProtKB-KW.
+DR   GO; GO:0014704; C:intercalated disc; IDA:UniProtKB.
+DR   GO; GO:0005882; C:intermediate filament; IEA:UniProtKB-KW.
+DR   GO; GO:0009898; C:internal side of plasma membrane; IDA:UniProtKB.
+DR   GO; GO:0015630; C:microtubule cytoskeleton; IDA:UniProtKB.
+DR   GO; GO:0035371; C:microtubule plus end; ISS:UniProtKB.
+DR   GO; GO:0060053; C:neurofilament cytoskeleton; IDA:MGI.
+DR   GO; GO:0005635; C:nuclear envelope; IDA:UniProtKB.
+DR   GO; GO:0005634; C:nucleus; IDA:UniProtKB.
+DR   GO; GO:0097038; C:perinuclear endoplasmic reticulum; IDA:UniProtKB.
+DR   GO; GO:0042383; C:sarcolemma; IDA:UniProtKB.
+DR   GO; GO:0001725; C:stress fiber; IDA:UniProtKB.
+DR   GO; GO:0030018; C:Z disc; IDA:UniProtKB.
+DR   GO; GO:0005509; F:calcium ion binding; IEA:InterPro.
+DR   GO; GO:0051010; F:microtubule plus-end binding; ISS:UniProtKB.
+DR   GO; GO:0042803; F:protein homodimerization activity; IDA:UniProtKB.
+DR   GO; GO:0007409; P:axonogenesis; IMP:MGI.
+DR   GO; GO:0007155; P:cell adhesion; IEA:UniProtKB-KW.
+DR   GO; GO:0007050; P:cell cycle arrest; IEA:InterPro.
+DR   GO; GO:0031122; P:cytoplasmic microtubule organization; IMP:MGI.
+DR   GO; GO:0045104; P:intermediate filament cytoskeleton organization; ISS:UniProtKB.
+DR   GO; GO:0046907; P:intracellular transport; IDA:UniProtKB.
+DR   GO; GO:0031110; P:regulation of microtubule polymerization or depolymerization; IMP:MGI.
+DR   GO; GO:0008090; P:retrograde axon cargo transport; IMP:MGI.
+DR   Gene3D; 1.10.238.10; -; 1.
+DR   Gene3D; 1.10.418.10; -; 2.
+DR   Gene3D; 3.30.920.20; -; 1.
+DR   InterPro; IPR001589; Actinin_actin-bd_CS.
+DR   InterPro; IPR001715; CH-domain.
+DR   InterPro; IPR011992; EF-hand-dom_pair.
+DR   InterPro; IPR018247; EF_Hand_1_Ca_BS.
+DR   InterPro; IPR002048; EF_hand_dom.
+DR   InterPro; IPR003108; GAS2_dom.
+DR   InterPro; IPR001101; Plectin_repeat.
+DR   InterPro; IPR018159; Spectrin/alpha-actinin.
+DR   InterPro; IPR002017; Spectrin_repeat.
+DR   Pfam; PF00307; CH; 2.
+DR   Pfam; PF13499; EF-hand_7; 1.
+DR   Pfam; PF02187; GAS2; 1.
+DR   Pfam; PF00681; Plectin; 5.
+DR   Pfam; PF00435; Spectrin; 18.
+DR   SMART; SM00033; CH; 2.
+DR   SMART; SM00054; EFh; 2.
+DR   SMART; SM00243; GAS2; 1.
+DR   SMART; SM00250; PLEC; 9.
+DR   SMART; SM00150; SPEC; 32.
+DR   SUPFAM; SSF143575; SSF143575; 1.
+DR   SUPFAM; SSF47576; SSF47576; 1.
+DR   PROSITE; PS00019; ACTININ_1; 1.
+DR   PROSITE; PS00020; ACTININ_2; 1.
+DR   PROSITE; PS50021; CH; 2.
+DR   PROSITE; PS00018; EF_HAND_1; 2.
+DR   PROSITE; PS50222; EF_HAND_2; 2.
+DR   PROSITE; PS51460; GAR; 1.
+DR   PROSITE; PS50002; SH3; FALSE_NEG.
+PE   1: Evidence at protein level;
+KW   3D-structure; Actin-binding; Alternative promoter usage;
+KW   Alternative splicing; Calcium; Cell adhesion; Cell junction;
+KW   Cell membrane; Cell projection; Coiled coil; Complete proteome;
+KW   Cytoplasm; Cytoskeleton; Direct protein sequencing;
+KW   Endoplasmic reticulum; Intermediate filament; Lipoprotein; Membrane;
+KW   Metal-binding; Microtubule; Muscle protein; Myristate; Nucleus;
+KW   Palmitate; Phosphoprotein; Reference proteome; Repeat; SH3 domain;
+KW   Transmembrane.
+FT   CHAIN         1   7389       Dystonin.
+FT                                /FTId=PRO_0000078141.
+FT   DOMAIN       35    252       Actin-binding.
+FT   DOMAIN       35    138       CH 1.
+FT   DOMAIN      151    252       CH 2.
+FT   REPEAT      701    801       Spectrin 1.
+FT   DOMAIN      889    941       SH3.
+FT   REPEAT     1582   1624       Plectin 1.
+FT   REPEAT     1657   1701       Plectin 2.
+FT   REPEAT     1772   1815       Plectin 3.
+FT   REPEAT     1816   1844       Plectin 4.
+FT   REPEAT     1848   1889       Plectin 5.
+FT   REPEAT     3845   3925       Spectrin 2.
+FT   REPEAT     3997   4079       Spectrin 3.
+FT   REPEAT     4440   4548       Spectrin 4.
+FT   REPEAT     4552   4657       Spectrin 5.
+FT   REPEAT     4775   4877       Spectrin 6.
+FT   REPEAT     5208   5315       Spectrin 7.
+FT   REPEAT     5322   5423       Spectrin 8.
+FT   REPEAT     5430   5532       Spectrin 9.
+FT   REPEAT     5647   5751       Spectrin 10.
+FT   REPEAT     5758   5856       Spectrin 11.
+FT   REPEAT     6002   6082       Spectrin 12.
+FT   REPEAT     6089   6191       Spectrin 13.
+FT   REPEAT     6197   6300       Spectrin 14.
+FT   REPEAT     6308   6410       Spectrin 15.
+FT   REPEAT     6415   6519       Spectrin 16.
+FT   REPEAT     6523   6629       Spectrin 17.
+FT   REPEAT     6636   6736       Spectrin 18.
+FT   REPEAT     6741   6844       Spectrin 19.
+FT   DOMAIN     7015   7050       EF-hand 1.
+FT   DOMAIN     7051   7086       EF-hand 2.
+FT   DOMAIN     7091   7169       GAR.
+FT   CA_BIND    7028   7039       1 (Potential).
+FT   CA_BIND    7064   7075       2 (Potential).
+FT   MOTIF      1382   1388       Nuclear localization signal; in isoform
+FT                                6.
+FT   MOTIF      7369   7372       Microtubule tip localization signal.
+FT   COMPBIAS   2362   2422       Asp-rich.
+FT   MOD_RES    2857   2857       Phosphoserine (By similarity).
+FT   MOD_RES    7250   7250       Phosphoserine (By similarity).
+FT   VAR_SEQ       1    381       MAGYLSPAAYMYVEEQEYLQAYEDVLERYKDERDKVQKKTF
+FT                                TKWINQHLMKVRKHVNDLYEDLRDGHNLISLLEVLSGDTLP
+FT                                REKGRMRFHRLQNVQIALDYLKRRQVKLVNIRNDDITDGNP
+FT                                KLTLGLIWTIILHFQISDIHVTGESEDMSAKERLLLWTQQA
+FT                                TEGYAGVRCENFTTCWRDGKLFNAIIHKYRPDLIDMNTVAV
+FT                                QSNLANLEHAFYVAEKIGVIRLLDPEDVDVSSPDEKSVITY
+FT                                VSSLYDAFPKVPEGGEGIGANDVEVKWIEYQNMVNYLIQWI
+FT                                RHHVVTMSERTFPNNPLELKALYNQYLQFKEKEIPPKEMEK
+FT                                SKIKRLYKLLEIWIEFGRIKLLQGYHPNDIEKEWGKLIIAM
+FT                                LEREKALRPEVE -> MRISCPFIVVPLINSCISFSNESLD
+FT                                GH (in isoform 5).
+FT                                /FTId=VSP_041541.
+FT   VAR_SEQ       1    137       MAGYLSPAAYMYVEEQEYLQAYEDVLERYKDERDKVQKKTF
+FT                                TKWINQHLMKVRKHVNDLYEDLRDGHNLISLLEVLSGDTLP
+FT                                REKGRMRFHRLQNVQIALDYLKRRQVKLVNIRNDDITDGNP
+FT                                KLTLGLIWTIILHF -> MGNVCGCVRAEKEEPYFDPAKSP
+FT                                LSPEKYSPGRKYFRRKPCQKVVDDTEPVRQSSEREGKKGVS
+FT                                QPAGGQPAVSSGELPWEDPAASPTKEDAVQLGKRAATEHGD
+FT                                QKPLPSSVDGYPHRVTVSSAQGRYSEVQVSIPDKIISEEDS
+FT                                PPYCPETERHLDDVNSKHRTFLRKDNVSLSQTAASSSPILC
+FT                                VTEKSLKNSALMGNLSRSCHSVLEQDSDERGHPFGVHRLQL
+FT                                TKRRCHSLSSGVSCVSKDAPRDDGC (in isoform 7).
+FT                                /FTId=VSP_041542.
+FT   VAR_SEQ       1     30       MAGYLSPAAYMYVEEQEYLQAYEDVLERYK -> MIAAAFL
+FT                                VLLRPYSIQCALFLLLLLLGTVATIVFFCCWHRKLQKGRHP
+FT                                MKSVFSGRSRSRDAALRSHHFRSEGFRASPRHIRRRVAAAA
+FT                                AARLEEVKPVVEVHHQSEQESSGRKRRIKKNSRVQPEFYHS
+FT                                VQGASTRRPSSGNASYRCSMSSSADFSDEDDFSQKSGSASP
+FT                                APGDTLPWNLPKHERSKRKIQGGSVLDPAERAVLRIA (in
+FT                                isoform 6).
+FT                                /FTId=VSP_041543.
+FT   VAR_SEQ     271    272       VK -> KG (in isoform 7).
+FT                                /FTId=VSP_041544.
+FT   VAR_SEQ     273   7389       Missing (in isoform 7).
+FT                                /FTId=VSP_041545.
+FT   VAR_SEQ     305   7389       Missing (in isoform 6).
+FT                                /FTId=VSP_041546.
+FT   VAR_SEQ    1432   1432       K -> MKRSKENSEHGAYSDLLQRQRATMVENSKLTGKISE
+FT                                LETMVAELKKQKSRVEEELPKVKEAAENELRKQQRNVEDIA
+FT                                LQKLRAESEAKQYRRELETIVREKEAAERELERVRQLTAEA
+FT                                EARRAAVEENLRNFRSQLQENTFTRQTLEDHLRRKDSSLSD
+FT                                LEQQKRALVEELQRKRDHEEELLRLVKQMERDLAFQKQVAE
+FT                                KQLKEKQKVELEARRKITEIQFSCRESAAVAQARPQREQGR
+FT                                QKEEELKQQVDELTLANRKAEKEMRELKYELSAVQLEKASS
+FT                                EEKARLLKDKLDETNNTLKCLKEDLERKDQAQERYSQQLRD
+FT                                LGGQLNQTTDKAEEVRQEANDLKKIKHTYQLELESLHQEKG
+FT                                KLQREVDRVTRAHALAERNIQCLNSQVHASRDEKDLSEERR
+FT                                RLCQRKSDHLKEEFERSHAQLLQNIQAEKENNDKIQKLNKE
+FT                                LEKSNECAETLKQKVDELTRQNNETKLMMQRIQAESKNIVR
+FT                                EKQAIQQRCEVLRIQADGFKDQLRNTNEHLHKQTKTEQDFH
+FT                                RKIKSLEDDLAQSQNLVSEFKQKCDQQSMIIQKTEKEVRSL
+FT                                SAELSASKEEKRREEQKAQLQRAQVQELNDRLKRVQDELHL
+FT                                KTIEEQMTHRKMILLQEESDKFKRSADEFRKKMEKLMESKV
+FT                                VTETDLSGIKHDFVSLQRENFRAQENAKLWETNIRELERQL
+FT                                QCYREKMQQGPPVEANHYQKCRRLEEELLAQRREVENLKQK
+FT                                MDQQIKEHEHQLLRLQCEIQKKSTTQDHTFASAFDTAGREC
+FT                                HHPAEISPGNSGHLNLKTRLPLSRWTQEPHQTEGKWPHRAA
+FT                                EQLPKEVQFRQPGAPLDRESSQPCYSEYFSQTSTELQITFD
+FT                                DKNPITRLSELETMREQALHPSRPPVTYQDDKLERELVKLL
+FT                                TPLEIAKNKQCGMHTEVTTLKQEKRLGSSAGGWMLEGCRTS
+FT                                GGLKGDFLKKSVEPEASPSLDLNQACSVRDEEFQFQGLRHT
+FT                                VTGRQLVEAKLLDMRTVEQLRLGLKTVEEVQRSLSKFLTKA
+FT                                TSIAGLYLESSKEKMSFTSAAQKIIIDKMIALAFLEAQAAT
+FT                                GFIIDPVSGQTYCVEDAVLHGIVDPEFRSRLLEAEKAVLGY
+FT                                SHASKTLSVFQAMENRMLDRKKGKHILEAQIASGGVIDPVR
+FT                                GVRVPPEMAVQQGLLNNAVLQFLHEPSSNTRVFPNPNNKQA
+FT                                LYYSELLQICVFDVDCQCFLLPFGEREISNLNIEKTHKIAV
+FT                                VDTKTGAELTAFEAFQRNLIDKGIYLELSGQQYQWKEATFF
+FT                                DSYGHPSHMLTDTKTGLQFNISEAVEQGTLDKALVQKYQEG
+FT                                LTTLTELADFLLSKVVPKKDLHSPIAGYWLTASGERISLLK
+FT                                ASRRNLVDRVTALRCLEAQICTGGIIDPLTGKKYRVAEALH
+FT                                RGLVDEGFAQQLRQCELVITGISHPVSNKMMSVVEAVNANI
+FT                                ISKEMGMRCLEFQYLTGGLIEPKVFSRLTIEEALHVGIIDV
+FT                                LIATRLKDQKSYVRDIMCPQTKRKLTYKEALEKADFDFHTG
+FT                                LKLLEVSEPLGTGISNLYYSSQ (in isoform 5).
+FT                                /FTId=VSP_041547.
+FT   VAR_SEQ    1433   7389       Missing (in isoform 5).
+FT                                /FTId=VSP_041548.
+FT   VAR_SEQ    1549   3557       Missing (in isoform 1).
+FT                                /FTId=VSP_041549.
+FT   VAR_SEQ    7125   7130       Missing (in isoform 3).
+FT                                /FTId=VSP_041550.
+FT   VAR_SEQ    7170   7193       Missing (in isoform 3 and isoform 4).
+FT                                /FTId=VSP_041551.
+FT   VAR_SEQ    7261   7261       K -> KILHPLTRNYGKPWLANSKMSTPCKAAECPDFPVSS
+FT                                AE (in isoform 3 and isoform 4).
+FT                                /FTId=VSP_041552.
+FT   MUTAGEN    1385   1385       R->A: Prevents isoform 6 from localizing
+FT                                to the nucleus; when associated with A-
+FT                                1386.
+FT   MUTAGEN    1386   1386       R->A: Prevents isoform 6 from localizing
+FT                                to the nucleus; when associated with A-
+FT                                1385.
+FT   CONFLICT   6193   6193       T -> A (in Ref. 1; AAK83383).
+FT   CONFLICT   7097   7097       G -> E (in Ref. 6; BAC29753/BAC34695).
+FT   CONFLICT   7241   7241       G -> A (in Ref. 6; BAC29753/BAC34695).
+SQ   SEQUENCE   7389 AA;  833638 MW;  BFED827ED8A88AAD CRC64;
+     MAGYLSPAAY MYVEEQEYLQ AYEDVLERYK DERDKVQKKT FTKWINQHLM KVRKHVNDLY
+     EDLRDGHNLI SLLEVLSGDT LPREKGRMRF HRLQNVQIAL DYLKRRQVKL VNIRNDDITD
+     GNPKLTLGLI WTIILHFQIS DIHVTGESED MSAKERLLLW TQQATEGYAG VRCENFTTCW
+     RDGKLFNAII HKYRPDLIDM NTVAVQSNLA NLEHAFYVAE KIGVIRLLDP EDVDVSSPDE
+     KSVITYVSSL YDAFPKVPEG GEGIGANDVE VKWIEYQNMV NYLIQWIRHH VVTMSERTFP
+     NNPLELKALY NQYLQFKEKE IPPKEMEKSK IKRLYKLLEI WIEFGRIKLL QGYHPNDIEK
+     EWGKLIIAML EREKALRPEV ERLDMLQQIA TRVQRDSVSC EDKLILARNA LQSDSKRLES
+     GVQFQNEAEI AGYILECENL LRQHVIDVQI LIDGKYYQAD QLVQRVAKLR DEIMALRNEC
+     SSVYSKGRML TTEQTKLMIS GITQSLNSGF AQTLHPSLNS GLTQSLTPSL TSSSVTSGLS
+     SGMTSRLTPS VTPVYAPGFP SVVAPNFSLG VEPNSLQTLK LMQIRKPLLK SSLLDQNLTE
+     EEVNMKFVQD LLNWVDEMQV QLDRTEWGSD LPSVESHLEN HKNVHRAIEE FESSLKEAKI
+     SEIQMTAPLK LSYTDKLHRL ESQYAKLLNT SRNQERHLDT LHNFVTRATN ELIWLNEKEE
+     SEVAYDWSER NSSVARKKSY HVELMRELEQ KEESIKAVQE IAEQLLLENH PARLTIEAYR
+     AAMQTQWSWI LQLCQCVEQH IQENSAYFEF FNDAKEATDY LRNLKDAIQR KYSCDRSSSI
+     HKLEDLVQES MEKEELLQYR SVVAGLMGRA KTVVQLKPRN PDNPLKTSIP IKAICDYRQI
+     EITIYKDDEC VLANNSHRAK WKVISPTGNE AVVPSVCFTV PPPNKEAVDF ANRIEQQYQS
+     VLTLWHESHI NMKSVVSWHY LVNEIDRIRA SNVASIKTML PGEHQQVLSN LQSRLEDFLE
+     DSQESQIFSG SDISQLEKEV SVCRKYYQEL LKSAEREEQE ESVYNLYISE VRNIRLRLES
+     CEDRLIRQIR TPLERDDLHE SMLRITEQEK LKKELDRLKD DLGTITNKCE EFFSQAADSP
+     SVPALRSELS VVIQSLSQIY SMSSTYIEKL KTVNLVLKNT QAAEALVKLY ETKLCEEEAV
+     IADKNNIENL MSTLKQWRSE VDEKREVFHA LEDELQKAKA ISDEMFKTHK ERDLDFDWHK
+     EKADQLVERW QSVHVQIDNR LRDLEGIGKS LKHYRDSYHP LDDWIQHIET TQRKIQENQP
+     ENSKALALQL NQQKMLVSEI EVKQSKMDEC QKYSEQYSAA VKDYELQTMT YRAMVESQQK
+     SPVKRRRIQS SADLVIQEFM DLRTRYTALV TLMTQYIKFA GDSLKRLEEE EKSLDEEKKQ
+     HIEKAKELQK WVSNISKTLG DGEKAGKPLF SKQQMSSKEI STKKEQFSEA LQTTQIFLAK
+     HGDKLTEEER SDLEKQVKTL QEGYNLLFSE SLKQQELQPS GESKVPEKPD KVIAGTINQT
+     TGEVLSVFQA VLRGLIDYET GIRLLEAQLV ITGLISPELR KCFDLRDAES HGLIDEQVLR
+     QLKELNRAKQ LISTASPTSI PVLDSLAQGM VSESMAIRVL EILLSAGPLL VPATGEHLTL
+     QQAFQQNLIS SALFSKVLER QDTCKDLIDP CTSEKVSLTD MVQRSILQEN TRMWLLPVRP
+     QEAGRITLKC GRSVSILRAA HEGLIDRETM FRLLGAQLLS GGLIDCNSGQ KMTVEEAVAE
+     GVIDRDTASS ILTYQVQTGG IVHSNPAKRL TVDEAVQCEL ITSSSALLVL EAQRGYVGLI
+     WPHSGEIFPT SSSLQQELIT NELASKILNG RQKIAALYIP ESSQVIGLDA AKQLGIIDNN
+     TASVLKDVKL PDKMPDLGDL EDCKNAKRWL SFCKFQPSTV HDYRQEEGGS DGEEPVTAQS
+     SEQTKKLFLS YLMVNSYMDA HTGQRLLLYD GDLDEAVSML LESCGAELGA DTSTRESLSV
+     LTIPDAFPDC ALSEEKHECS ADKCHYSHPG HKESLENAKW DMNEAFCKMG NNDSNGELPR
+     PENLADTTVV QKGSESPSRV RVPKPTSSST QPEGSVLRPE SGSILKGCKS QSEPVTKKYP
+     DGTNHSHFLT SETSRPCDSN EREDEENIQK GPSVFDYSPR LSALLSHDEL RQSQGRFSDT
+     STPQNTGYLC EASTLSPSDQ RVLADQSTRE KFQDRFLGIA AISVSLQGAP CGQKPVDTEC
+     SSSQVHYHSE ESMSDASAES GATRQTDESE KTGSKVEDNS CTMVPGGGSR NDNTSDCGPL
+     SHKGAIDAGD YETSLLAGQQ SDTATDSDSD DYFYDTPLFE DEDHDSLILQ GDDRDCLQPE
+     DYDTSLQEEN DRTPPPDDIF YDVMKEKENP EFPHGGMDES LGVENKVCCP QGFPVGIEKP
+     ELYLAGEKEF NSGGSEQLVE SVSESENPPG LWDSESDSLT EGEIIGRKER LGASLTPDGH
+     WRGDREECDT SRESQSDTDG VGSIQSSESY RPYMSDGSDL DEEDNGGRSS EDSGDGRGGQ
+     GVADEGGEPQ YQADPTQLYT AIRKEHGGET QNVSDMIPLD KTHSYSPLET QHGAGVFQPE
+     SAGKGGWDTE RSSHPELTTE ADEEDEASLS THMATKGVSL SNAEGTASEE IRLVQGPDSS
+     GILKAEDLEN VSPEISPSSD NIVRSEAELG GGASEDGHLS FTGSDRDQQG PGRGLVKGRD
+     GQSDKLVDET SIREMGFQKE GVLMSSPEEG GEEERDLEPF PNGSATESLN MGKSQVPPLL
+     THTEELSHRG APHTTTMTTT MTLEGEAKNV QTGLTESPVL LETLAEIFDT PASKVTRADL
+     TSAVTASEMK SQVKEDSLTG GPEKETGPCT SLGHCDKCIH VDMLEPNEHT PSCALVAPPT
+     VKDNLCSVNN AGEKSVRPQE DWPPAAEVRL SDACVEESIS EGKAGILQFT PENSDSTLSR
+     LPHQSVAGWG KSADSVQARL PVSGVRHTSA DTLDVGCPQL ESSREKASAE EEPHRERALS
+     LKPQEREHHM LGFVEDGRSI LKSSLDKVHM NLQEVGDPSA GTGTKISIQN LIRRAILSEL
+     PNEVSNVPSH GISPISNSSE VRAESGGDPF CITSFLHLLK QNQPPQETPG ISELAKVLTQ
+     MDCDPEQRGL GSELLPPQLK NAFYKLLFDG YATEKDQAEA LGQTSCAVPK MAEEKPHVCS
+     DLRNKEGHHC PLNPQAVGEA EVEPFSVHIA ALPGGEKLGE LCSEPPEHSE STSGSKERSS
+     DGSSKEKCSN GLQQCLQHTE KMHEYLVLLQ DMKPPLDNQA SVESSLEALK SQLKQLEAFE
+     LGLAPIAVFL RKDLKLAEEF LKSFPSDLPR RHHEELSKSH QRLQNAFSSL SSVSSERMKL
+     IKLAINSEMS KLAVRHEDFL HKLTSYSDWV SEKSRSVKAI QTVNVQDTEL VKNSVKFLKN
+     VLADLSHTKM QLETTAFDVQ SFISDYAQDL SPSQSRQLLR LLNTTQKGFL DLQELVTTEA
+     DRLEALLQLE QELGHQKVVA ERQQEYREKL QGLCDLLTQT ENRLISNQEA FVIGDGTVEL
+     QKYQSKQEEL QRDMQGSTQA MEEIVRNTEL FLKESGDELS QADRALIEQK LNEVKMKCAQ
+     LNLKAEQSRK ELDKAVTTAL KEETEKVAAV RQLEESKTKI ENLLNWLSNV EEDSEGVWTK
+     HTQPMEQNGT YLHEGDSKLG AGEEDEVNGN LLETDAEGHS EATKGNLNQQ YEKVKAQHGK
+     IMAQHQAVLL ATQSAQVLLE KQGHYLSPEE KEKLQKNTQE LKVHYEKVLA ECEKKVKLTH
+     SLQEELEKFD TDYSEFEHWL QQSEQELANL EAGADDLSGL MDKLTRQKSF SEDVISHKGD
+     LRYITISGNR VIDAAKSCSK RDSDRIGKDS VETSATHREV QTKLDQVTDR FRSLYSKCSV
+     LGNNLKDLVD QYQQYEDASC GLLSGLQACE AKASKHLREP IALDPKNLQR QLEETKALQG
+     QISSQQVAVE KLKKTAEVLL DAKGSLLPAK NDIQKTLDDI VGRYDDLSKC VNERNEKLQI
+     TLTRSLSVQD ALDEMLDWMG SVESSLVKPG QVPLNSTALQ DLISKDTMLE QDITGRQSSI
+     NAMNEKVKTF IETTDPSTAS SLQAKMKDLS ARFSEASQKH KEKLAKMVEL KAKVEQFEKL
+     SDKLQTFLET QSQALTEVAM PGKDVPELSQ HMQESTAKFL EHRKDLEALH SLLKEISSHG
+     LPGDKALVFE KTNNLSRKFK EMEDTIQEKK DALSSCQEQL SAFQTLAQSL KTWIKETTKQ
+     VPVVKPSLGT EDLRKSLEET KKLQEKWNLK APEIHKASNS GVSLCNLLSA LISPAKAIAA
+     AKSGGVILNG EGTDTNTQDF LANKGLTSIK KDMTDISHSY EDLGLLLKDK IVELNTKLSK
+     LQKAQEESSA MMQWLEKMNK TASRWRQTPT PADTESVKLQ VEQNKSFEAE LKQNVNKVQE
+     LKDKLSELLE ENPEAPEAQS WKQALAEMDT KWQELNQLTM DRQQKLEESS NNLTQFQTTE
+     AQLKQWLMEK ELMVSVLGPL SIDPNMLNTQ KQQVQILLQE FDTRKPQYEQ LTAAGQGILS
+     RPGEDPSLHG IVNEQLEAVT QKWDNLTGQL RDRCDWIDQA IVKSTQYQSL LRSLSGTLTE
+     LDDKLSSGLT SGALPDAVNQ QLEAAQRLKQ EIEQQAPKIK EAQEVCEDLS ALVKEEYLKA
+     ELSRQLEGIL KSFKDIEQKT ENHVQHLQSA CASSHQFQQM SKDFQAWLDA KKEEQRDSPP
+     ISAKLDVLES LLNSQKDFGK TFTEQSNIYE KTISEGENLL LKTQGAEKAA LQLQLNTMKT
+     DWDRFRKQVK EREEKLKDSL EKALKYREQV ETLRPWIDRC QHSLDGVTFS LDPTESESSI
+     AELKSLQKEM DHHFGMLELL NNTANSLLSV CEVDKEAVTE ENQSLMEKVN RVTEQLQSKT
+     VSLENMAQKF KEFQEVSRDT QRQLQDTKEQ LEVHHSLGPQ AYSNKHLSVL QAQQKSLQTL
+     KQQVDEAKRL AQDLVVEAAD SKGTSDVLLQ AETLAEEHSE LSQQVDEKCS FLETKLQGLG
+     HFQNTIREMF SQFTECDDEL DGMAPVGRDA ETLRKQKACM QTFLKKLEAL MASNDSANRT
+     CKMMLATEET SPDLIGVKRD LEALSKQCNK LLDRAKTREE QVDGATEKLE EFHRKLEEFS
+     TLLQKAEEHE ESQGPVGTET ETINQQLDVF KVFQKEEIEP LQVKQQDVNW LGQGLIQSAA
+     ANTCTQGLEH DLDSVNSRWK TLNKKVAQRT SQLQEALLHC GRFQDALESL LSWMADTEEL
+     VANQKPPSAE FKVVKAQIQE QKLLQRLLED RKSTVEVIKR EGEKIAASAE PADRVKLTRQ
+     LSLLDSRWEA LLSRAEARNR QLEGISVVAQ EFHGTLEPLN EWLTAVEKKL ANSEPIGTQA
+     PKLEEQISQH KALQEDILLR KQSVDQALLN GLELLKQTTG DEVLIIQDKL EAIKARYKDI
+     TKLSADVAKT LEHALQLAGQ LQSMHKELCN WLDKVEVELL SYETQGLKGE AASQVQERQK
+     ELKNEVRSNK ALVDSLNEVS SALLELVPCR AKEGLEKTIA DDNEPLPDCE PTQSRHKVEE
+     IDAAILRSQQ FEQAADAELS WITETQKKLM SLGDIRLEQD QTSAQLQVQK AFTMDILRHK
+     DIIDELVTSG HKIMTTSGEE EKQSMKKKLD KVLKKYDAVC QINSERHLQL ERAQSLVSQF
+     WETYEELWPW LTETQRIISQ LPAPALEYET FERQQEEHRQ LRELIAEHKP HIDKMNKTGP
+     QLLELSPKEG IYIQEKYVAA DTLYSQIKED VKKRAVVLDE AISQSTQFHD KIDQILESLE
+     RIAERLRQPP SISAEVEKIK EQIGENKSVS VDMEKLQPLY ETLRQRGEEM IARSEGTEKD
+     VSARAVQDKL DQMVFIWGSI HTLVEEREAK LLDVMELAEK FWCDHMSLVV TIKDTQDFIR
+     DLEDPGIDPS VVKQQQEAAE AIREEIDGLQ EELDMVITLG SELIAACGEP DKPIVKKSID
+     ELNSAWDSLN KAWKDRVDRL EEAMQAAVQY QDGLQGIFDW VDIAGDKLAT MSPIGTDLET
+     VKQQIEELKQ FKSEAYQQQM EMERLNHQAE LLLKKVTEEA DKHTVQDPLM ELKLIWDSLD
+     ERIVSRQHKL EGTLLALGQF QHALDELLAW LTHTKGLLSE QKPVGGDPKA IEIELAKHHV
+     LQNDVLAHQS TVEAVNKAGN DLIESSEGEE ASNLQYKLRI LNQRWQDILE KTDQRKQQLD
+     SALRQAKGFH GEIEDLQQWL TDTERHLLAS KPLGGLPETA KEQLNAHMEV CTAFAIKEET
+     YKSLMLRGQQ MLARCPRSAE TNIDQDITNL KEKWESVKSK LNEKKTKLEE ALHLAMNFHN
+     SLQDFINWLT QAEQTLNVAS RPSLILDTIL FQIDEHKVFA NEVNSHREQI IELDKTGTHL
+     KYFSQKQDVV LIKNLLISVQ SRWEKVVQRL VERGRSLDEA RKRAKQFHEA WSKLMEWLEE
+     SEKSLDSELE IANDPDKIKA QLVQHKEFQK SLGGKHSVYD TTNRTGRSLK EKTSLADDNL
+     KLDNMLSELR DKWDTICGKS VERQNKLEEA LLFSGQFTDA LQALIDWLYR VEPQLAEDQP
+     VHGDIDLVMS LIDNHKVFQK ELGKRTSSVQ ALKRSARELI EGSRDDSSWV RVQMQELSTR
+     WETVCALSIS KQTRLESALQ QAEEFHSVVH TLLEWLAEAE QTLRFHGALP DDEDALRTLI
+     EQHKEFMKRL EEKRAELSKA TGMGDALLAV CHPDSITTIK HWITIIQARF EEVLAWAKQH
+     QQRLAGALAG LIAKQELLET LLAWLQWAET TLTEKDKEVI PQEIEEVKTL IAEHQTFMEE
+     MTRKQPDVDK VTKTYKRRAT DPPSLQSHIP VLDKGRAGRK RFPASGFYPS GSQTQIETKN
+     PRVNLLVSKW QQVWLLALER RRKLNDALDR LEELREFANF DFDIWRKKYM RWMNHKKSRV
+     MDFFRRIDKD QDGKITRQEF IDGILSSKFP TSRLEMSAVA DIFDRDGDGY IDYYEFVAAL
+     HPNKDAYKPI TDADKIGDEV TRQVAKCKCA KRFQVEQIGD NKYRFFLGNQ FGDSQQLRLV
+     RILRSTVMVR VGGGWMALDE FLVKNDPCRV HHHGSKMLRS ESNSSITATQ PTLAKGRTNM
+     ELREKFILAD GASQGMAAFR PRGRRSRPSS RGASPNRSTS GSSHACQAAS PPVPAAASTP
+     KGTPIQGSKL RLPGYLSGKG FHSGEDSALI TTAAARVRTQ FAESRKTPSR PGSRAGSKAG
+     SRASSRRGSD ASDFDISEIQ SVCSDVETVP QTHRPVPRAG SRPSTAKPSK IPTPQRRSPA
+     SKLDKSSKR
+//
