@@ -377,7 +377,7 @@ def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=500):
   by parse_uniprot_txt_file) of the given seqids. The seqids
   must be valid uniprot identifiers.
 
-  uniprot can't handle isoforms.
+  Now handles isoform versions of accession id's!
   """
 
   unique_seqids = list(set(seqids))
@@ -481,7 +481,7 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname):
   alternative_to_uniprot = { p[0]:p[1] for p in pairs }
   for entry in entries:
     if entry['seqid'] in alternative_to_uniprot:
-      entry['uniprot_id'] = alternative_to_uniprot[entry['seqid']]
+      entry['uniprot_acc'] = alternative_to_uniprot[entry['seqid']]
 
 
 def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
@@ -492,7 +492,7 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
       'raw_seqid':seqid,
       'seqid':'',
       'id_type':'',
-      'uniprot_id':'',
+      'uniprot_acc':'',
       'metadata':''})
   
   # break up pieces when in form xx|xxxxx|xxx
@@ -509,7 +509,8 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
   for is_id_fn, name, uniprot_mapping_type in id_types:
     probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname+'.'+name)
 
-  # delete the variant suffixes in some uniprot id's
+  # delete the variant suffixes in some uniprot id's as probe_id_type
+  # can't cope with uniprot variant for id mapping lookup (bad!)
   for entry in entries:
     if entry['id_type'] == '' and is_uniprot_variant(entry['seqid']):
       entry['seqid'] = entry['seqid'][:6]
@@ -517,18 +518,28 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
   # map UNIPROT ID's to their current best entry
   probe_id_type(entries, is_uniprot, 'UNIPROT-ACC', 'ACC+ID', cache_fname+'.seqid')
 
-  uniprot_seqids = [entry['uniprot_id'] for entry in entries 
-                    if 'uniprot_id' in entry]
+  uniprot_seqids = []
+  for entry in entries:
+    if 'uniprot_acc' in entry:
+      uniprot_seqids.append(entry['uniprot_acc'])
+    if is_uniprot_variant(entry['raw_seqid']):
+      # put the isoform variants back up id name as
+      # batch_uniprot_metadata can handle isoforms!
+      uniprot_seqids.append(entry['raw_seqid'])
+      entry['uniprot_acc'] = entry['raw_seqid']
+  print(uniprot_seqids)
   uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_fname)
+
+  print(entries)
 
   result = {}
   for entry in entries:
-    if entry['uniprot_id'] == "":
+    if entry['uniprot_acc'] == "":
       continue
-    uniprot_id = entry['uniprot_id']
-    if uniprot_id not in uniprot_dict:
+    uniprot_acc = entry['uniprot_acc']
+    if uniprot_acc not in uniprot_dict:
       continue
-    result[entry['raw_seqid']] = uniprot_dict[uniprot_id]
+    result[entry['raw_seqid']] = uniprot_dict[uniprot_acc]
 
   return result
 

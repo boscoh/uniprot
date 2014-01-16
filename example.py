@@ -1,10 +1,22 @@
 import os
 import uniprot
 import pprint
-
+import sys
 
 # Clean up caches
 os.system('rm cache*')
+
+# Example 4 - chaining commands to map seqids
+seqids = "EFG_MYCA1 YP_885981.1 ENSG00000196176 Q91ZU6-8".split()
+uniprot_data = uniprot.get_metadata_with_some_seqid_conversions(
+    seqids, 'cache2')
+# pprint.pprint(uniprot_data, indent=2)
+fasta_db = "test-isoform/Q91ZU6-8.fasta"
+read_seqids, fastas = uniprot.read_fasta(fasta_db)
+test_sequence = fastas.values()[0]['sequence']
+print(test_sequence == uniprot_data['Q91ZU6-8']['sequence'])
+
+sys.exit(1)
 
 # Example 1 - reading a fasta file
 seqids, fastas = uniprot.read_fasta('example.fasta')
@@ -28,7 +40,7 @@ uniprot_data = uniprot.parse_isoforms(text)
 pprint.pprint(uniprot_data)
 
 # Example 4 - chaining commands to map seqids
-seqids = "EFG_MYCA1 YP_885981.1 ENSG00000196176".split()
+seqids = "EFG_MYCA1 YP_885981.1 ENSG00000196176 Q91ZU6-8".split()
 uniprot_data = uniprot.get_metadata_with_some_seqid_conversions(
     seqids, 'cache2')
 pprint.pprint(uniprot_data, indent=2)
