@@ -155,6 +155,8 @@ usage = """
 `seqidtype` works out the type of seqid at http://uniprot.org by
 brute-force matching seqids against all seqid types
 
+(c) 2013, Bosco Ho. BSD.
+
 seqidtype seqid1 seqid2 seqid3 ...
 
 (Example: seqidtype YOR261C)

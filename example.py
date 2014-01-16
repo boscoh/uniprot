@@ -33,3 +33,12 @@ uniprot_data = uniprot.get_metadata_with_some_seqid_conversions(
     seqids, 'cache2')
 pprint.pprint(uniprot_data, indent=2)
 
+# Example 5 - check isoforms
+seqids = ["Q91ZU6-{}".format(i) for i in [1, 2, 3, 4, 5, 6, 8]]
+txt = open('test-isoform/Q91ZU6.txt').read()
+results = uniprot.parse_uniprot_metadata_with_seqids(seqids, txt)
+for seqid in seqids:
+  fasta_db = "test-isoform/" + seqid + '.fasta'
+  read_seqids, fastas = uniprot.read_fasta(fasta_db)
+  test_sequence = fastas.values()[0]['sequence']
+  print(seqid, test_sequence == results[seqid]['sequence'])
