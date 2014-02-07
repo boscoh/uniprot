@@ -1,15 +1,11 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-description = \
-"""`uniprot.py` is a collection of calls to retrieve protein sequence identifier mappings and metadata from http://uniprot.org.
-
-Docs at http://github.com/boscoh/uniprot.
-"""
+description = "Docs at http://github.com/boscoh/uniprot"
 
 setup(
     name='uniprot',
-    version='1.0a2',
+    version='1.0',
     author='Bosco Ho',
     author_email='boscoh@gmail.com',
     url='http://github.com/boscoh/uniprot',
