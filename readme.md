@@ -126,6 +126,12 @@ The heart of the function `get_metadata_with_some_seqid_conversions` uses patter
 
 The metadata is then returned as a dictionary with the original seqids as keys. You can follow the logic in this function to construct functions of your own design.
 
+## Changelog
+
+### 1.0.1 
+- bug parsing isoform metadata when dangling isoforms at the end of line
+- get_metadata_with_some_seqid_conversions can now actually handle None for cache_basename
+
 (c) 2013, Bosco Ho
 
 
