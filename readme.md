@@ -128,6 +128,9 @@ The metadata is then returned as a dictionary with the original seqids as keys. 
 
 ## Changelog
 
+### 1.0.2
+- add a default cache_fname parameter to get_uniprot_id_mapping_pairs 
+
 ### 1.0.1 
 - bug parsing isoform metadata when dangling isoforms at the end of line
 - get_metadata_with_some_seqid_conversions can now actually handle None for cache_basename
