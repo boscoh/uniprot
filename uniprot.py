@@ -54,7 +54,7 @@ def is_html(text):
 
 
 def get_uniprot_id_mapping_pairs(
-    from_type, to_type, seqids, cache_fname):
+    from_type, to_type, seqids, cache_fname=None):
   """
   Returns a list of matched pairs of identifiers.
   
@@ -272,7 +272,7 @@ def parse_uniprot_txt_file(cache_txt):
       if 'GO' in words[0]:
         if 'go' not in entry:
           entry['go'] = []
-        entry['go'].append(words[1][:-1])
+        entry['go'].append(' '.join(words[1:]))
       if 'Pfam' in words[0]:
         if 'pfam' not in entry:
           entry['pfam'] = []
