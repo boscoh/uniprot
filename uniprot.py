@@ -62,16 +62,16 @@ def get_uniprot_id_mapping_pairs(
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
   if cache_fname and os.path.isfile(cache_fname):
-    print "Loading (%s->ACC) seqid mappings in %s" % (from_type.upper(), cache_fname)
+    print "Loading (%s->%s) seqid mappings in %s" % (from_type.upper(), to_type.upper(), cache_fname)
     text = open(cache_fname).read()
   else:
-    print "Fetching %s (%s->ACC) seqid mappings ..." % (len(seqids), from_type.upper())
+    print "Fetching %s (%s->%s) seqid mappings ..." % (len(seqids), from_type.upper(), to_type.upper())
     r = requests.post(
         'http://www.uniprot.org/mapping/', 
          files={'file':StringIO.StringIO(' '.join(seqids))}, 
          params={
-          'from': from_type,
-          'to': to_type,
+          'from': from_type.upper(),
+          'to': to_type.upper(),
           'format': 'tab',
           'query': ''})
     text = r.text
@@ -87,7 +87,7 @@ def get_uniprot_id_mapping_pairs(
 
 
 def batch_uniprot_id_mapping_pairs(
-    from_type, to_type, seqids, batch_size=500, cache_basename=None):
+    from_type, to_type, seqids, batch_size=400, cache_basename=None):
   """
   Returns a list of matched pairs of identifiers.
   Converts identifiers using above function 'get_uniprot_id_mapping_pairs'
@@ -374,7 +374,7 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   return parse_uniprot_metadata_with_seqids(seqids, cache_txt)
 
 
-def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=500):
+def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=400):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
   by parse_uniprot_txt_file) of the given seqids. The seqids
@@ -573,22 +573,31 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
   return uniprot_dict
 
 
-def sort_seqids_by_uniprot(names, uniprot_dict):
+def sort_seqids_by_uniprot(seqids, uniprot_data):
   """
-  Weighs protein names to whether they are found
-  by uniprot, and are reviewed
+  Returns a sorted list of seqids such that longest proteins that are
+  reviewed appear first in the list.
   """
-  def seqid_val(seqid):
-    val = 3
-    if seqid in uniprot_dict:
-      val -= 1
-      if uniprot_dict[seqid]['is_reviewed']:
-        val -= 1
-      if len(get_naked_seqid(seqid)) <= 6:
-        val -= 1
-    return val
-  names.sort(cmp=lambda a, b: seqid_val(a) - seqid_val(b))
-  return names    
+
+  def cmp_longer_protein_is_first(seqid1, seqid2):
+    return uniprot_data[seqid2]['length'] \
+        - uniprot_data[seqid1]['length']
+
+  def diff_list(orig_list, other_list):
+    return [v for v in orig_list if v not in other_list]
+
+  uniprot_seqids = filter(lambda s: s in uniprot_data, seqids)
+  uniprot_seqids.sort(cmp=cmp_longer_protein_is_first)
+
+  remainder_seqids = diff_list(seqids, uniprot_seqids)
+
+  is_reviewed = lambda s: uniprot_data[s]['is_reviewed']
+  reviewed_seqids = filter(is_reviewed, uniprot_seqids)
+  reviewed_seqids.sort(cmp=cmp_longer_protein_is_first)
+
+  unreviewed_seqids = diff_list(uniprot_seqids, reviewed_seqids)
+
+  return reviewed_seqids + unreviewed_seqids + remainder_seqids
 
 
 def parse_fasta_header(header, seqid_fn=None):
