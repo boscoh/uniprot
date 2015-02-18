@@ -66,6 +66,15 @@ If you would rather parse the metadata text yourself, the raw text is cached to 
     for l in open('cache.0.txt'):
       print l
 
+### Sorting seqids to find a good representative
+
+Sometimes you will have a bunch of seqids that are related. For further analysis, you might just want pick the best one with the most useful uniprot information - for instance, the one that is the longest and that has also been reviewed (manually curated). 
+
+A function `sort_seqids_by_uniprot` does just that. Let's say we have `uniprot_seqids` and `uniprot_data` from before. Then to find the most useful representative:
+ 
+    sorted_seqids = uniprot.sort_seqids_by_uniprot(uniprot_seqids, uniprot_data)
+    best_seqid = sorted_seqids[0]
+
 ### Extracting isoform sequences
 
 The Uniprot metadata contains information for the known isoforms of a protein, but this is expressed rather awkwardly as VAR_SEQ entries. Here is a function that reconstructs the isoform sequences from the raw metadata text:
@@ -127,6 +136,10 @@ The heart of the function `get_metadata_with_some_seqid_conversions` uses patter
 The metadata is then returned as a dictionary with the original seqids as keys. You can follow the logic in this function to construct functions of your own design.
 
 ## Changelog
+
+### 1.1
+- sort_seqids_by_uniprot
+- change limits to 400 (due to some error messages from uniprot)
 
 ### 1.0.2
 - add a default cache_fname parameter to get_uniprot_id_mapping_pairs 
