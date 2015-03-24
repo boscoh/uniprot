@@ -23,6 +23,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import re
+import sys
 import os
 import textwrap
 import time
