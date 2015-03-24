@@ -27,9 +27,13 @@ import sys
 import os
 import textwrap
 import time
+import json
 import StringIO
-import requests
+import shutil
 from copy import deepcopy
+
+import requests
+
 
 
 """
@@ -66,10 +70,10 @@ def get_uniprot_id_mapping_pairs(
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
   if cache_fname and os.path.isfile(cache_fname):
-    logging("Loading (%s->%s) seqid mappings in %s\n" % (from_type.upper(), to_type.upper(), cache_fname))
+    logging("Loading cached (%s->%s) mappings from %s\n" % (from_type.upper(), to_type.upper(), cache_fname))
     text = open(cache_fname).read()
   else:
-    logging("Fetching %s (%s->%s) seqid mappings ...\n" % (len(seqids), from_type.upper(), to_type.upper()))
+    logging("Fetching %s (%s->%s) mappings from http://uniprot.org...\n" % (len(seqids), from_type.upper(), to_type.upper()))
     r = requests.post(
         'http://www.uniprot.org/mapping/', 
          files={'file':StringIO.StringIO(' '.join(seqids))}, 
@@ -91,7 +95,7 @@ def get_uniprot_id_mapping_pairs(
 
 
 def batch_uniprot_id_mapping_pairs(
-    from_type, to_type, seqids, batch_size=400, cache_basename=None):
+    from_type, to_type, seqids, batch_size=400, cache_dir=None):
   """
   Returns a list of matched pairs of identifiers.
   Converts identifiers using above function 'get_uniprot_id_mapping_pairs'
@@ -100,14 +104,27 @@ def batch_uniprot_id_mapping_pairs(
   from_type and to_type can be obtained from:
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
+  if cache_dir:
+    seqids_txt = os.path.join(cache_dir, 'seqids.json')
+    if os.path.isfile(seqids_txt):
+        saved_seqids = json.load(open(seqids_txt))
+        if saved_seqids != seqids:
+            shutil.rmtree(cache_dir)
+
+    if not os.path.isdir(cache_dir):
+      os.makedirs(cache_dir)
+
+    if not os.path.isfile(seqids_txt):
+      json.dump(seqids, open(seqids_txt, 'w'))
+
   pairs = []
   i_seqid = 0
   if batch_size is None:
     batch_size = len(seqids)
   while i_seqid <= len(seqids):
     seqids_subset = seqids[i_seqid:i_seqid+batch_size]
-    if cache_basename:
-      subset_cache = '%s.%d.txt' % (cache_basename, i_seqid)
+    if cache_dir:
+      subset_cache = os.path.join(cache_dir, 'mapping.%d.txt' % i_seqid)
     else:
       subset_cache = None
     subset_pairs = get_uniprot_id_mapping_pairs(
@@ -354,10 +371,10 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
 
   primary_seqids = [s[:6] for s in seqids]
   if cache_fname and os.path.isfile(cache_fname):
-    logging("Loading uniprot metadata from " + cache_fname + "\n")
+    logging("Loading cached metadata from " + cache_fname + "\n")
     cache_txt = open(cache_fname).read()
   else:
-    logging("Fetching uniprot metadata for %d ACC seqids ...\n" % len(primary_seqids))
+    logging("Fetching metadata for %d Uniprot IDs from http://uniprot.org ...\n" % len(primary_seqids))
     r = requests.post(
         'http://www.uniprot.org/batch/', 
         files={'file':StringIO.StringIO(' '.join(primary_seqids))}, 
@@ -378,7 +395,7 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   return parse_uniprot_metadata_with_seqids(seqids, cache_txt)
 
 
-def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=400):
+def batch_uniprot_metadata(seqids, cache_dir=None, batch_size=400):
   """
   Returns a dictonary of the uniprot metadata (as parsed 
   by parse_uniprot_txt_file) of the given seqids. The seqids
@@ -388,14 +405,28 @@ def batch_uniprot_metadata(seqids, cache_basename=None, batch_size=400):
   """
 
   unique_seqids = list(set(seqids))
+
+  if cache_dir:
+    seqids_txt = os.path.join(cache_dir, 'seqids.json')
+    if os.path.isfile(seqids_txt):
+        saved_seqids = json.load(open(seqids_txt))
+        if saved_seqids != unique_seqids:
+            shutil.rmtree(cache_dir)
+
+    if not os.path.isdir(cache_dir):
+      os.makedirs(cache_dir)
+
+    if not os.path.isfile(seqids_txt):
+      json.dump(unique_seqids, open(seqids_txt, 'w'))
+
   metadata = {}
   i_seqid = 0
   if batch_size is None:
     batch_size = len(unique_seqids)
   while i_seqid <= len(unique_seqids):
     seqids_subset = unique_seqids[i_seqid:i_seqid+batch_size]
-    if cache_basename:
-      subset_cache = '%s.%d.txt' % (cache_basename, i_seqid)
+    if cache_dir:
+      subset_cache = os.path.join(cache_dir, 'metadata.%d.txt' % i_seqid)
     else:
       subset_cache = None
     metadata_subset = fetch_uniprot_metadata(
@@ -484,14 +515,14 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname):
     return
   n_id = len(alternative_ids)
   pairs = batch_uniprot_id_mapping_pairs(
-      uniprot_mapping_type, 'ACC', alternative_ids, cache_basename=cache_fname)
+      uniprot_mapping_type, 'ACC', alternative_ids, cache_dir=cache_fname)
   alternative_to_uniprot = { p[0]:p[1] for p in pairs }
   for entry in entries:
     if entry['seqid'] in alternative_to_uniprot:
       entry['uniprot_acc'] = alternative_to_uniprot[entry['seqid']]
 
 
-def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
+def get_metadata_with_some_seqid_conversions(seqids, cache_dir=None):
   logging("Looking up uniprot metadata for %d seqids\n" % len(seqids))
   entries = []
   for seqid in seqids:
@@ -514,8 +545,8 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
     (is_ensembl, 'ensembl', 'ENSEMBL_ID'),
     (is_maybe_uniprot_id, 'uniprotid', 'ID')]
   for is_id_fn, name, uniprot_mapping_type in id_types:
-    if cache_fname:
-      seqid_cache_fname = cache_fname+'.'+name
+    if cache_dir:
+      seqid_cache_fname = os.path.join(cache_dir, name)
     else:
       seqid_cache_fname = None
     probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, seqid_cache_fname)
@@ -527,8 +558,8 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
       entry['seqid'] = entry['seqid'][:6]
 
   # map UNIPROT ID's to their current best entry
-  if cache_fname:
-    seqid_cache_fname = cache_fname+'.seqid'
+  if cache_dir:
+    seqid_cache_fname = os.path.join(cache_dir, 'uniprotuniprot')
   else:
     seqid_cache_fname = None
   probe_id_type(entries, is_uniprot, 'UNIPROT-ACC', 'ACC+ID', seqid_cache_fname)
@@ -542,7 +573,7 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
       # batch_uniprot_metadata can handle isoforms!
       uniprot_seqids.append(entry['raw_seqid'])
       entry['uniprot_acc'] = entry['raw_seqid']
-  uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_fname)
+  uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_dir)
 
   result = {}
   for entry in entries:

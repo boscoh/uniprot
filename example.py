@@ -23,7 +23,7 @@ uniprot_data = uniprot.batch_uniprot_metadata(
 pprint.pprint(uniprot_data, indent=2)
 
 # Example 3 - parse for isoforms in metadata
-text = open('cache.0.txt').read()
+text = open('cache/metadata.0.txt').read()
 uniprot_data = uniprot.parse_isoforms(text)
 pprint.pprint(uniprot_data)
 
