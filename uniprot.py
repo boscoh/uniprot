@@ -46,6 +46,9 @@ including the protein sequence.
 """
 
 
+def logging(s):
+  sys.stdout.write(s)
+
 
 def is_html(text):
   if re.search('<html', text):
@@ -62,10 +65,10 @@ def get_uniprot_id_mapping_pairs(
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
   if cache_fname and os.path.isfile(cache_fname):
-    print "Loading (%s->%s) seqid mappings in %s" % (from_type.upper(), to_type.upper(), cache_fname)
+    logging("Loading (%s->%s) seqid mappings in %s\n" % (from_type.upper(), to_type.upper(), cache_fname))
     text = open(cache_fname).read()
   else:
-    print "Fetching %s (%s->%s) seqid mappings ..." % (len(seqids), from_type.upper(), to_type.upper())
+    logging("Fetching %s (%s->%s) seqid mappings ...\n" % (len(seqids), from_type.upper(), to_type.upper()))
     r = requests.post(
         'http://www.uniprot.org/mapping/', 
          files={'file':StringIO.StringIO(' '.join(seqids))}, 
@@ -80,7 +83,7 @@ def get_uniprot_id_mapping_pairs(
         f.write(text)
   if is_html(text):
     # failed call results in a HTML error reporting page
-    print "Error in fetching metadata"
+    logging("Error in fetching metadata\n")
     return []
   lines = [l for l in text.splitlines() if 'from' not in l.lower()]
   return [l.split('\t')[:2] for l in lines]
@@ -350,17 +353,17 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
 
   primary_seqids = [s[:6] for s in seqids]
   if cache_fname and os.path.isfile(cache_fname):
-    print "Loading uniprot metadata from", cache_fname
+    logging("Loading uniprot metadata from " + cache_fname + "\n")
     cache_txt = open(cache_fname).read()
   else:
-    print "Fetching uniprot metadata for %d ACC seqids ..." % len(primary_seqids)
+    logging("Fetching uniprot metadata for %d ACC seqids ...\n" % len(primary_seqids))
     r = requests.post(
         'http://www.uniprot.org/batch/', 
         files={'file':StringIO.StringIO(' '.join(primary_seqids))}, 
         params={'format':'txt'})
     while 'Retry-After' in r.headers:
       t = int(r.headers['Retry-After'])
-      print 'Waiting %d' % t
+      logging('Waiting %d\n' % t)
       time.sleep(t)
       r = requests.get(r.url)
     cache_txt = r.text
@@ -368,7 +371,7 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
       open(cache_fname, 'w').write(r.text)
     if is_html(cache_txt):
       # Got HTML response -> error
-      print "Error in fetching metadata"
+      logging("Error in fetching metadata\n")
       return {}
 
   return parse_uniprot_metadata_with_seqids(seqids, cache_txt)
@@ -488,7 +491,7 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname):
 
 
 def get_metadata_with_some_seqid_conversions(seqids, cache_fname=None):
-  print "Looking up uniprot metadata for %d seqids" % len(seqids)
+  logging("Looking up uniprot metadata for %d seqids\n" % len(seqids))
   entries = []
   for seqid in seqids:
     entries.append({
