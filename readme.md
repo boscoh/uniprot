@@ -56,14 +56,14 @@ To get metadata for sequences, we need to have a list of seqids in the Uniprot A
         uniprot_seqids, 'cache')
     pprint.pprint(mapping, indent=2)
 
-The function `batch_uniprot_metadata` contains a simple parser that extracts a small number of fields into a Python dictionary, with the Uniprot ID as the dictionary key. You can carry further analysis on this dictionary. For example, you can write the sequences to a `.fasta` file using the convenience
+The function `batch_uniprot_metadata` contains a simple parser that extracts a small number of fields into a Python dictionary, with the Uniprot ID as the dictionary key. The results are obtained though batched queries to http://uniprot.org over several calls. An optional directory `cache` refers to a directory that stores cached results in case of interruption. You can carry further analysis on the `uniprot_data` dictionary. For example, you can write the sequences to a `.fasta` file using the convenience
 function:
 
     uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
 
-If you would rather parse the metadata text yourself, the raw text is cached to `cache.basename*.txt` files:
+If you would rather parse the metadata text yourself, you can refer to the raw text that was cached in the `cache/metadata.*.txt` files:
 
-    for l in open('cache.0.txt'):
+    for l in open('cache/metadata.0.txt'):
       print l
 
 ### Sorting seqids to find a good representative
@@ -79,7 +79,7 @@ A function `sort_seqids_by_uniprot` does just that. Let's say we have `uniprot_s
 
 The Uniprot metadata contains information for the known isoforms of a protein, but this is expressed rather awkwardly as VAR_SEQ entries. Here is a function that reconstructs the isoform sequences from the raw metadata text:
   
-    text = open('cache.0.txt').read()
+    text = open('cache/metadata.0.txt').read()
     isoforms_dict = uniprot.parse_isoforms(text)
     pprint.pprint(isoforms_dict)
 
@@ -136,6 +136,11 @@ The heart of the function `get_metadata_with_some_seqid_conversions` uses patter
 The metadata is then returned as a dictionary with the original seqids as keys. You can follow the logic in this function to construct functions of your own design.
 
 ## Changelog
+
+### 1.2
+- changed the cache parameter of `batch_uniprot_id_mapping_pairs` and `batch_uniprot_metadata`  to a directory `cache_dir`
+- the batch functions now saves the seqids parameters and will do a clean search  if the cached seqids do not match
+- abstracted all screen output to the `logging` function that can be overwritten
 
 ### 1.1
 - sort_seqids_by_uniprot
