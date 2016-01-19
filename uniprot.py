@@ -28,7 +28,10 @@ import os
 import textwrap
 import time
 import json
-import StringIO
+try:
+  from StringIO import StringIO
+except ImportError:
+  from io import StringIO
 import shutil
 from copy import deepcopy
 
@@ -37,7 +40,7 @@ import requests
 
 
 """
-This is my uniprot python library. It provides a bunch of 
+This is my uniprot python library. It provides a bunch of
 routines to access the uniprot.org website's RESTful API.
 
 Principally, you want to do two things:
@@ -65,7 +68,7 @@ def get_uniprot_id_mapping_pairs(
     from_type, to_type, seqids, cache_fname=None):
   """
   Returns a list of matched pairs of identifiers.
-  
+
   from_type and to_type can be obtained from:
     http://www.uniprot.org/faq/28#mapping-faq-table
   """
@@ -75,8 +78,8 @@ def get_uniprot_id_mapping_pairs(
   else:
     logging("Fetching %s (%s->%s) mappings from http://uniprot.org...\n" % (len(seqids), from_type.upper(), to_type.upper()))
     r = requests.post(
-        'http://www.uniprot.org/mapping/', 
-         files={'file':StringIO.StringIO(' '.join(seqids))}, 
+        'http://www.uniprot.org/mapping/',
+         files={'file':StringIO(' '.join(seqids))},
          params={
           'from': from_type.upper(),
           'to': to_type.upper(),
@@ -228,7 +231,7 @@ def parse_isoforms(text):
             sequence = sequence[:i] + sequence[j:]
           else:
             sequence = sequence[:i] + var_seq['mutation'] + sequence[j:]
-      isoforms[isoform_id]['sequence'] = sequence      
+      isoforms[isoform_id]['sequence'] = sequence
   return uniprot_data
 
 
@@ -337,9 +340,11 @@ def parse_uniprot_metadata_with_seqids(seqids, cache_txt):
   isoform seqid's
   """
   metadata = parse_uniprot_txt_file(cache_txt)
+  tmp = metadata.copy()
   for uniprot_id in metadata.keys():
     for seqid in metadata[uniprot_id]['accs'] + [metadata[uniprot_id]['id']]:
-      metadata[seqid] = metadata[uniprot_id]
+      tmp[seqid] = metadata[uniprot_id]
+  metadata = tmp
   results = {}
   isoform_dict = parse_isoforms(cache_txt)
   for seqid in seqids:
@@ -362,7 +367,7 @@ def parse_uniprot_metadata_with_seqids(seqids, cache_txt):
 
 def fetch_uniprot_metadata(seqids, cache_fname=None):
   """
-  Returns a dictonary of the uniprot metadata (as parsed 
+  Returns a dictonary of the uniprot metadata (as parsed
   by parse_uniprot_txt_file) of the given seqids. The seqids
   must be valid uniprot identifiers.
 
@@ -376,8 +381,8 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   else:
     logging("Fetching metadata for %d Uniprot IDs from http://uniprot.org ...\n" % len(primary_seqids))
     r = requests.post(
-        'http://www.uniprot.org/batch/', 
-        files={'file':StringIO.StringIO(' '.join(primary_seqids))}, 
+        'http://www.uniprot.org/batch/',
+        files={'file':StringIO(' '.join(primary_seqids))},
         params={'format':'txt'})
     while 'Retry-After' in r.headers:
       t = int(r.headers['Retry-After'])
@@ -397,7 +402,7 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
 
 def batch_uniprot_metadata(seqids, cache_dir=None, batch_size=400):
   """
-  Returns a dictonary of the uniprot metadata (as parsed 
+  Returns a dictonary of the uniprot metadata (as parsed
   by parse_uniprot_txt_file) of the given seqids. The seqids
   must be valid uniprot identifiers.
 
@@ -532,7 +537,7 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_dir=None):
       'id_type':'',
       'uniprot_acc':'',
       'metadata':''})
-  
+
   # break up pieces when in form xx|xxxxx|xxx
   for entry in entries:
     entry['seqid'] = get_naked_seqid(entry['raw_seqid'])
@@ -638,7 +643,7 @@ def sort_seqids_by_uniprot(seqids, uniprot_data):
 def parse_fasta_header(header, seqid_fn=None):
   """
   Parses a FASTA format header (with our without the initial '>').
-  
+
   If NCBI SeqID format (gi|gi-number|gb|accession etc, is detected
   the first id in the list is used as the canonical id (see see
   http://www.ncbi.nlm.nih.gov/books/NBK21097/#A631 ).
@@ -661,7 +666,7 @@ def parse_fasta_header(header, seqid_fn=None):
     tokens = header.split()
     seqid = tokens[0]
     name = header[0:-1].strip()
-  
+
   if seqid_fn is not None:
     seqid = seqid_fn(seqid)
 
@@ -673,7 +678,7 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
   """
   Extracts protein sequences from a fasta database, given
   a list of desired seqids. A seqid_fn can be given that
-  parses both the input seqids and the seqid in the fasta 
+  parses both the input seqids and the seqid in the fasta
   file to faciliate matching, but the keys in the returned
   structure corresponds to entries in 'seqids'.
   """
@@ -710,7 +715,7 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
 def read_fasta(fasta_db, seqid_fn=None):
   """
   Parses a fasta database file. Warning: will be slow for very large
-  databases. In that case, it would be better to use 
+  databases. In that case, it would be better to use
   read_selected_fasta() instead.
 
   Returns a lsit of seqids encountered, and a dictionary
@@ -733,7 +738,7 @@ def read_fasta(fasta_db, seqid_fn=None):
       if words:
         proteins[seqid]['sequence'] += words[0]
   return seqids, proteins
-  
+
 
 
 def write_fasta(
@@ -751,7 +756,3 @@ def write_fasta(
     for i in range(0, len(sequence), width):
       f.write(sequence[i:i+width] + "\n")
   f.close()
-
-
-
-
