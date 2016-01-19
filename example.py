@@ -39,7 +39,7 @@ uniprot_data = uniprot.get_metadata_with_some_seqid_conversions(
     seqids, 'cache2')
 fasta_db = "test-isoform/Q91ZU6-8.fasta"
 read_seqids, fastas = uniprot.read_fasta(fasta_db)
-test_sequence = fastas.values()[0]['sequence']
+test_sequence = list(fastas.values())[0]['sequence']
 print(test_sequence == uniprot_data['Q91ZU6-8']['sequence'])
 
 # Example 5 - check isoforms
@@ -49,5 +49,5 @@ results = uniprot.parse_uniprot_metadata_with_seqids(seqids, txt)
 for seqid in seqids:
   fasta_db = "test-isoform/" + seqid + '.fasta'
   read_seqids, fastas = uniprot.read_fasta(fasta_db)
-  test_sequence = fastas.values()[0]['sequence']
+  test_sequence = list(fastas.values())[0]['sequence']
   print(seqid, test_sequence == results[seqid]['sequence'])
