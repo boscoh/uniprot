@@ -62,7 +62,7 @@ def is_html(text):
 
 
 def get_uniprot_id_mapping_pairs(
-    from_type, to_type, seqids, cache_fname=None):
+    from_type, to_type, seqids, cache_fname=None, session=None):
   """
   Returns a list of matched pairs of identifiers.
   
@@ -74,7 +74,11 @@ def get_uniprot_id_mapping_pairs(
     text = open(cache_fname).read()
   else:
     logging("Fetching %s (%s->%s) mappings from http://uniprot.org...\n" % (len(seqids), from_type.upper(), to_type.upper()))
-    r = requests.post(
+    if session is None:
+      s = requests.Session()
+    else:
+      s = session
+    r = s.post(
         'http://www.uniprot.org/mapping/', 
          files={'file':StringIO.StringIO(' '.join(seqids))}, 
          params={
@@ -83,6 +87,8 @@ def get_uniprot_id_mapping_pairs(
           'format': 'tab',
           'query': ''})
     text = r.text
+    if session is None:
+      s.close()
     if cache_fname:
       with open(cache_fname, 'w') as f:
         f.write(text)
@@ -121,16 +127,17 @@ def batch_uniprot_id_mapping_pairs(
   i_seqid = 0
   if batch_size is None:
     batch_size = len(seqids)
-  while i_seqid <= len(seqids):
-    seqids_subset = seqids[i_seqid:i_seqid+batch_size]
-    if cache_dir:
-      subset_cache = os.path.join(cache_dir, 'mapping.%d.txt' % i_seqid)
-    else:
-      subset_cache = None
-    subset_pairs = get_uniprot_id_mapping_pairs(
-        from_type, to_type, seqids_subset, cache_fname=subset_cache)
-    pairs.extend(subset_pairs)
-    i_seqid += batch_size
+  with requests.Session() as session:
+    while i_seqid <= len(seqids):
+      seqids_subset = seqids[i_seqid:i_seqid+batch_size]
+      if cache_dir:
+        subset_cache = os.path.join(cache_dir, 'mapping.%d.txt' % i_seqid)
+      else:
+        subset_cache = None
+      subset_pairs = get_uniprot_id_mapping_pairs(
+          from_type, to_type, seqids_subset, cache_fname=subset_cache)
+      pairs.extend(subset_pairs)
+      i_seqid += batch_size
   return pairs
 
 
