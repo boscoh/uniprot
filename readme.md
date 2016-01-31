@@ -137,6 +137,9 @@ The metadata is then returned as a dictionary with the original seqids as keys. 
 
 ## Changelog
 
+### 1.3
+- Python 3 compatibility (thanks Nader Moshed)
+
 ### 1.2
 - changed the cache parameter of `batch_uniprot_id_mapping_pairs` and `batch_uniprot_metadata`  to a directory `cache_dir`
 - the batch functions now saves the seqids parameters and will do a clean search  if the cached seqids do not match

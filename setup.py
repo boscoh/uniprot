@@ -5,7 +5,7 @@ description = "Docs at http://github.com/boscoh/uniprot"
 
 setup(
     name='uniprot',
-    version='1.2',
+    version='1.3',
     author='Bosco Ho',
     author_email='boscoh@gmail.com',
     url='http://github.com/boscoh/uniprot',
