@@ -358,7 +358,7 @@ def parse_uniprot_metadata_with_seqids(seqids, cache_txt):
     if seqid in metadata:
       results[seqid] = metadata[seqid]
     else:
-      primary_seqid = seqid[:6]
+      primary_seqid = clean_uniprot(seqid, isoform=False)
       if primary_seqid in metadata:
         protein_metadata = metadata[primary_seqid]
         uniprot_id = protein_metadata['id']
@@ -381,7 +381,7 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   Now handles isoform versions of accession id's!
   """
 
-  primary_seqids = [s[:6] for s in seqids]
+  primary_seqids = clean_uniprot_list(seqids, isoform=False, purge=True)
   if cache_fname and os.path.isfile(cache_fname):
     logging("Loading cached metadata from " + cache_fname + "\n")
     cache_txt = open(cache_fname).read()
@@ -453,16 +453,74 @@ def is_text(seqid):
     return True
   return False
 
-
+def clean_uniprot_list(seqids, isoform=False, purge=True):
+    """
+    takes a list of ids, and matches them against the uniprot pattern, returning the 
+    matching elements
+    
+    seqids : list of strings
+            the list of (presumed) uniprot ids
+    isoform : Boolean, default False
+            if True, will only return ids matching an isoform identifier. If False, will
+            return the primary accession if an isoform is given.
+    purge : Boolean, default True
+            if True, will remove all NoneTypes from the list.
+    """
+    clean_list = [ clean_uniprot(s, isoform=isoform) for s in seqids ]
+    if purge:
+        return [ c for c in clean_list if c is not None ] 
+    else:
+        return clean_list    
+    
+def clean_uniprot(seqid, isoform=False):
+    """
+  UniProtKB accession numbers are 6 or 10 alphanumerical characters, matching the regex:
+  [OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}
+  
+  (from http://www.uniprot.org/help/accession_numbers)
+  
+  Isoform ids are indicated by a unprot accession, followed by a hyphen and number.
+  
+  This function matches the seqid against the uniprot regex pattern, and if it matches, 
+  returns the pattern, otherwise it returns None.
+  
+  seqid : str 
+        the (supposed) uniprot id.
+  isoform: Boolean, default False
+        if True, will only return ids matching an isoform identifier. If False, will
+        return the primary accession if an isoform is given.
+  """
+    if isoform:
+        m = re.match('([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})-(\d+)$', seqid)
+        if m:
+            return "-".join([m.group(1), m.group(3)])
+        else:
+            return None
+    else:
+        m = re.match('([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})(-\d+)?$', seqid)
+        if m:
+            return m.group(1)
+        else:
+            return None
+        
 def is_uniprot(seqid):
-  if re.match('[A-N,R-Z][0-9][A-Z][A-Z,0-9][A-Z,0-9][0-9]$', seqid):
+  """
+  UniProtKB accession numbers are 6 or 10 alphanumerical characters, matching the regex:
+  [OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}
+  
+  (from http://www.uniprot.org/help/accession_numbers)
+  """
+  if re.match('[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}$', seqid):
     return True
-  if re.match('[O,P,Q][0-9][A-Z,0-9][A-Z,0-9][A-Z,0-9][0-9]$', seqid):
-    return True
-  return False
+  else:
+      return False
 
 
 def is_uniprot_variant(seqid):
+  if clean_uniprot(seqid, isoform=True):
+    return True
+  return False
+  """
   if is_uniprot(seqid[:6]):
     if len(seqid) == 6:
       return True
@@ -470,7 +528,7 @@ def is_uniprot_variant(seqid):
     if re.match('[-]\d+', variant):
       return True
   return False
-
+  """
 
 def is_sgd(seqid):
   if re.match('Y[A-Z][L,R]\d\d\d[W|C]$', seqid):
@@ -502,7 +560,7 @@ def get_naked_seqid(seqid):
     return pieces[1]
   return seqid
 
-
+# move the following to unittest: 
 assert is_refseq('NP_064308.1')
 assert not is_refseq('NP_064308a1')
 assert is_refseq('NP_064308')
@@ -567,7 +625,7 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_dir=None):
   # can't cope with uniprot variant for id mapping lookup (bad!)
   for entry in entries:
     if entry['id_type'] == '' and is_uniprot_variant(entry['seqid']):
-      entry['seqid'] = entry['seqid'][:6]
+      entry['seqid'] = clean_uniprot(entry['seqid'], isoform=False)
 
   # map UNIPROT ID's to their current best entry
   if cache_dir:
@@ -606,7 +664,7 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
   to uniprot first.
   """
 
-  stripped_seqids = [s[:6] for s in seqids]
+  stripped_seqids = clean_uniprot_list(seqids, isoform=False, purge=True)
   pairs = batch_uniprot_id_mapping_pairs(
       'ACC+ID', 'ACC', stripped_seqids)
   uniprot_seqids = []
@@ -615,8 +673,8 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
       uniprot_seqids.append(seqid1)
   uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_txt)
   for seqid in seqids:
-    if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
-      uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
+    if seqid not in uniprot_seqids and clean_uniprot(seqid, isoform=False) in uniprot_seqids:
+      uniprot_dict[seqid] = uniprot_dict[clean_uniprot(seqid, isoform=False)]
   return uniprot_dict
 
 
