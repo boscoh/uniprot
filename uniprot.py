@@ -82,7 +82,7 @@ def get_uniprot_id_mapping_pairs(
     else:
       s = session
     r = s.post(
-        'http://www.uniprot.org/mapping/', 
+        'https://www.uniprot.org/uploadlists/', 
          files={'file':StringIO(' '.join(seqids))}, 
          params={
           'from': from_type.upper(),
