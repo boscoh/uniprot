@@ -48,7 +48,7 @@ import pprint
 A convenience function is provided to read seqids and sequences from a fasta file:
 
 ```python
-seqids, fastas = uniprot.read_fasta('example.fasta')
+seqids, fastas = uniprot.read_fasta('examples/example.fasta')
 ```
 
 
@@ -172,67 +172,62 @@ The metadata is then returned as a dictionary with the original seqids as keys. 
 
 ## Project Structure
 
-The project consists of:
+```
+uniprot/
+├── uniprot.py          # Main module
+├── pyproject.toml      # Project configuration
+├── readme.md
+├── tests/              # Test suite
+│   ├── test_uniprot.py       # Unit tests
+│   ├── test_integration.py   # API integration tests
+│   └── data/                 # Test fixtures
+│       └── isoform/          # Isoform test data
+└── examples/           # Usage examples
+    ├── example.py
+    └── example.fasta
+```
 
 - **uniprot.py** - Main module with functions for ID mapping, metadata fetching, and parsing
-- **test_uniprot.py** - Unit tests covering:
-  - Sequence ID type detection (RefSeq, SGD, UniProt, Ensembl)
-  - FASTA file reading/writing
-  - Isoform parsing from UniProt metadata
-  - Header parsing and sequence ID extraction
-  - Metadata parsing and caching
-- **test_integration.py** - Integration tests requiring network connectivity:
-  - Real API calls to UniProt REST endpoints
-  - ID mapping between different sequence ID types
-  - Metadata fetching and caching validation
-  - Error handling with invalid IDs
-  - *Run separately: `uv run python -m unittest test_integration -v`*
-- **test_seqidtypes.py** - Tests validating ID types against current UniProt API:
-  - Validation of sequence ID type compatibility
-  - Documentation of deprecated field names in _SEQIDTYPE_SCRAPE
-  - API response structure validation
-  - *Requires network: `uv run python -m unittest test_seqidtypes -v`*
-- **example.py** - Example usage demonstrating the module's functionality
-- **example.fasta** - Sample FASTA file for testing
-- **test-isoform/** - Test data directory with UniProt metadata files for isoform testing
+- **tests/test_uniprot.py** - Unit tests for parsing, FASTA I/O, and ID detection
+- **tests/test_integration.py** - Integration tests with real UniProt API (requires network)
+- **examples/** - Example usage demonstrating the module's functionality
 
 ## Testing
 
 Run the unit test suite with uv:
 
 ```bash
-uv run python -m unittest test_uniprot -v
+uv run python -m unittest tests.test_uniprot -v
 ```
 
 For integration tests (requires internet):
 
 ```bash
-uv run python -m unittest test_integration -v
-```
-
-For seqidtype validation (requires internet):
-
-```bash
-uv run python -m unittest test_seqidtypes -v
+uv run python -m unittest tests.test_integration -v
 ```
 
 Run all tests:
 
 ```bash
-uv run python -m unittest discover -v
+uv run python -m unittest discover tests -v
 ```
 
 ## Changelog
 
+### 1.4.1 (January 4, 2026)
+- Reorganized project structure: tests in `tests/`, examples in `examples/`
+- Fixed bug in `get_metadata_with_some_seqid_conversions()` where empty seqids caused HTTP 400 errors
+- Fixed VAR_SEQ parsing to handle both old and new UniProt formats
+- Fixed isoform parsing for entries without `(in isoform X)` annotations
+- Fixed parsing of VAR_SEQ entries without `->` transitions
+
 ### 1.4 (January 4, 2026)
-- version bump to 1.4 - update changelog with dates and contributor credits
 - Uses `pyproject.toml` for project configuration
 - Dependency management with [uv](https://docs.astral.sh/uv/)
 - Moved seqidtype functionality into uniprot module as `seqidtype_analyze()` and `seqidtype_cli()`
 - **Test Suite**: Comprehensive test coverage
   - `test_uniprot.py` - Unit tests for parsing, FASTA I/O, and ID detection
   - `test_integration.py` - Integration tests with real UniProt API endpoints
-  - `test_seqidtypes.py` - Validation of ID type compatibility against current API
 - **API Update**: Updated to use new UniProt REST API field names (July 2021+)
   - Old field names (e.g., `P_REFSEQ_AC`, `ENSEMBL_ID`, `ACC`, `ID`) are deprecated
   - New field names (e.g., `RefSeq_Protein`, `Ensembl`, `UniProtKB_AC-ID`, `UniProtKB`) are now used

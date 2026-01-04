@@ -244,7 +244,6 @@ def parse_isoforms(text):
       if var_seq is not None and l[5] != ' ':
         var_seq = None
       if line.startswith('VAR_SEQ'):
-        # Handle range format like "1..15"
         range_str = words[1]
         if '..' in range_str:
           parts = range_str.split('..')
@@ -253,10 +252,17 @@ def parse_isoforms(text):
             'j': int(parts[1]),
             'block': ''
           }
-        else:
+        elif len(words) >= 3 and words[2].isdigit():
           var_seq = {
             'i': int(words[1]),
             'j': int(words[2]),
+            'block': ''
+          }
+        else:
+          pos = int(words[1])
+          var_seq = {
+            'i': pos,
+            'j': pos,
             'block': ''
           }
         uniprot_data[uniprot_id]['var_seqs'].append(var_seq)
@@ -288,25 +294,25 @@ def parse_isoforms(text):
     for var_seq in var_seqs:
       block = var_seq['block']
       match = re.search(r'\(.*\)', block)
-      isoform_tokens = match.group()[1:-1].split()
       isoform_ids = []
-      for i in range(len(isoform_tokens)):
-        if 'isoform' in isoform_tokens[i]:
-          isoform_ids.append(str(isoform_tokens[i+1]))
+      if match:
+        isoform_tokens = match.group()[1:-1].split()
+        for i in range(len(isoform_tokens)):
+          if 'isoform' in isoform_tokens[i]:
+            isoform_ids.append(str(isoform_tokens[i+1]))
       var_seq['isoform_ids'] = isoform_ids
       if block.startswith('Missing'):
         var_seq['deletion'] = True
       else:
         var_seq['deletion'] = False
         transition = block.split('(')[0]
-        original, mutation = transition.split('->')
-        var_seq['sequence'] = original.strip()
-        # Check sequence length matches range
-        expected_len = var_seq['j'] - var_seq['i'] + 1
-        if len(var_seq['sequence']) != expected_len:
-          logging("Warning: VAR_SEQ sequence length mismatch: got %d, expected %d\n" % 
-                  (len(var_seq['sequence']), expected_len))
-        var_seq['mutation'] = mutation.strip()
+        if '->' in transition:
+          original, mutation = transition.split('->')
+          var_seq['sequence'] = original.strip()
+          var_seq['mutation'] = mutation.strip()
+        else:
+          var_seq['sequence'] = ''
+          var_seq['mutation'] = transition.strip()
     var_seqs.sort(key=lambda v:-v['i'])
     for isoform_id in isoforms:
       sequence = original_sequence
@@ -658,7 +664,7 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_dir=None):
 
   uniprot_seqids = []
   for entry in entries:
-    if 'uniprot_acc' in entry:
+    if entry.get('uniprot_acc'):
       uniprot_seqids.append(entry['uniprot_acc'])
     if is_uniprot_variant(entry['raw_seqid']):
       # put the isoform variants back up id name as

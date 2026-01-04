@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "uniprot"
-version = "1.4"
+version = "1.4.1"
 description = "retrieve protein sequence identifiers and metadata from http://uniprot.org"
-readme = "readme.md"
+readme = {file = "readme.md", content-type = "text/markdown"}
 license = {text = "BSD"}
 authors = [
     {name = "Bosco Ho", email = "boscoh@gmail.com"}
