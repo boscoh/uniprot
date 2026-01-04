@@ -178,7 +178,8 @@ Run all tests:
 
 ## Changelog
 
-### 1.3
+### 1.4 (January 4, 2026)
+- version bump to 1.4 - update changelog with dates and contributor credits
 - Migrated to Python 3
 - Uses `pyproject.toml` for project configuration
 - Dependency management with [uv](https://docs.astral.sh/uv/)
@@ -193,21 +194,35 @@ Run all tests:
   - Added dynamic validation: code now fetches mapping rules from the API to validate field combinations before requests
   - Maps to `UniProtKB` destination instead of `UniProtKB_AC-ID` (which is source-only)
 
-### 1.2
+### 1.3.2 (November 22, 2021)
+- Update url for mapping (knightjdr)
+
+### 1.3.1 (May 17, 2017)
+- Added support for TrEMBL format uniprot accessions (Peter Oxley)
+
+### 1.3 (February 1, 2016)
+- Migrated to Python 3
+- Added isoform parsing support
+- Improved seqid type detection
+
+### 1.2 (March 26, 2015)
 - changed the cache parameter of `batch_uniprot_id_mapping_pairs` and `batch_uniprot_metadata`  to a directory `cache_dir`
 - the batch functions now saves the seqids parameters and will do a clean search  if the cached seqids do not match
 - abstracted all screen output to the `logging` function that can be overwritten
 
-### 1.1
+### 1.1 (February 18, 2015)
 - sort_seqids_by_uniprot
 - change limits to 400 (due to some error messages from uniprot)
 
-### 1.0.2
+### 1.0.2 (July 23, 2014)
 - add a default cache_fname parameter to get_uniprot_id_mapping_pairs 
 
-### 1.0.1 
+### 1.0.1 (February 26, 2014)
 - bug parsing isoform metadata when dangling isoforms at the end of line
 - get_metadata_with_some_seqid_conversions can now actually handle None for cache_basename
+
+### 1.0.0 (February 7, 2014)
+- Initial release
 
 (c) 2013, Bosco Ho
 
