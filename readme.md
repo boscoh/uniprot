@@ -12,13 +12,15 @@
 
 ## Installation
 
-To install:
+This project uses [uv](https://docs.astral.sh/uv/). To install the package and its dependencies:
 
-    >> pip install uniprot
+    >> uv sync
 
-If you're installing directly from `setup.py`, be aware that `uniprot.py` has one dependency: `requests.py`:
+To run Python code with the correct environment:
 
-    >> pip install requests
+    >> uv run python your_script.py
+
+The package requires `httpx` as a dependency.
 
 ## Examples
 
@@ -37,12 +39,12 @@ A convenience function is provided to read seqids and sequences from a fasta fil
 
 ### Fetch seqid mappings
 
-Uniprot.org provides a seqid mapping service, but you must specify the seqid types, which are listed at <http://www.uniprot.org/faq/28#id_mapping_examples>.  In this example, we have some RefSeq seqid's (P_REFSEQ_AC) that we want to map to UniProt Accession seqid's (ACC):
+UniProt.org provides a seqid mapping service, but you must specify the seqid types, which are listed at <https://www.uniprot.org/help/id_mapping>. In this example, we have some RefSeq seqid's (RefSeq_Protein) that we want to map to UniProtKB identifiers:
 
     seqids = "NP_000508.1  NP_001018081.3".split()
 
     pairs = uniprot.batch_uniprot_id_mapping_pairs(
-      'P_REFSEQ_AC', 'ACC', seqids)
+      'RefSeq_Protein', 'UniProtKB', seqids)
 
     pprint.pprint(pairs, indent=2)
 
@@ -88,31 +90,26 @@ The Uniprot metadata contains information for the known isoforms of a protein, b
 
 Unfortunately, you probably have been given some files where you can't recognize the seqid type. You are not going to be able to fetch the metadata unless you can map your seqid to the Uniprot Accession type.
 
-Never fear!  Included is `seqidtype`, an executable script that uses a  brute-force approach to figure out the id type of a bunch of seqids. On the command-line:
+Never fear! The `seqidtype_analyze()` function uses a brute-force approach to figure out the id type of a bunch of seqids. You can use it programmatically:
 
-    >> seqidtype YP_885981.1
+    uniprot.seqidtype_analyze('YP_885981.1', cache_fname='seqidtype.json')
 
-`seqidtype` will attempt to map a seqid against all the seqid types listed in <http://www.uniprot.org/faq/28#id_mapping_examples>. After running through all 50 or so seqid types, you will get a list of working seqid types, which should look something like:
+Or run it as a command-line tool:
 
-    ===> Analyzing YP_885981.1
-    Fetching 1 (ACC->ACC) seqid mappings ...
-    YP_885981.1 -> ACC -> None
-    Fetching 1 (ID->ACC) seqid mappings ...
-    YP_885981.1 -> ID -> None
-    . 
-    .
-    .
-    Fetching 1 (P_REFSEQ_AC->ACC) seqid mappings ...
-    YP_885981.1:P_REFSEQ_AC -> A0QSU3
-    .
-    .
-    .
-    YP_885981.1 is compatible with seqid type: P_REFSEQ_AC
+    >> uv run seqidtype YP_885981.1
 
-Since this requires lots of http requests, to avoid lost work, the intermediate results are cached in the current directory under `seqidtype.json`, which can be safely deleted. Once you have obtained the seqid type, you can map your seqids to the Uniprot Accession seqid type:
+`seqidtype_analyze()` will attempt to map a seqid against all the seqid types listed in <https://www.uniprot.org/help/id_mapping>. After running through all ~100 seqid types, you will get a list of working seqid types, which should look something like:
+
+    Analyzing YP_885981.1
+    YP_885981.1:UniProtKB -> None
+    YP_885981.1:UniProtKB_AC-ID -> None
+    YP_885981.1:RefSeq_Protein -> A0QSU3
+    YP_885981.1 is compatible with: RefSeq_Protein
+
+Since this requires lots of http requests, to avoid lost work, the intermediate results are cached in the current directory under `seqidtype.json`, which can be safely deleted. Once you have obtained the seqid type, you can map your seqids to the UniProtKB seqid type:
 
     pairs = uniprot.batch_uniprot_id_mapping_pairs(
-      'P_REFSEQ_AC', 'ACC', seqids)
+      'RefSeq_Protein', 'UniProtKB', seqids)
 
 ## Chaining calls
 
@@ -125,20 +122,76 @@ The heart of the function `get_metadata_with_some_seqid_conversions` uses patter
 
     # convert a few types into uniprot_ids
     id_types = [
-      (is_sgd, 'locustag', 'ENSEMBLGENOME_PRO_ID'),
-      (is_refseq, 'refseqp', 'P_REFSEQ_AC'),
-      (is_refseq, 'refseqnt', 'REFSEQ_NT_ID'),
-      (is_ensembl, 'ensembl', 'ENSEMBL_ID'),
-      (is_maybe_uniprot_id, 'uniprotid', 'ID')]
+      (is_sgd, 'locustag', 'SGD'),
+      (is_refseq, 'refseqp', 'RefSeq_Protein'),
+      (is_refseq, 'refseqnt', 'RefSeq_Nucleotide'),
+      (is_ensembl, 'ensembl', 'Ensembl'),
+      (is_maybe_uniprot_id, 'uniprotid', 'UniProtKB_AC-ID')]
     for is_id_fn, name, uniprot_mapping_type in id_types:
       probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname+'.'+name)
 
 The metadata is then returned as a dictionary with the original seqids as keys. You can follow the logic in this function to construct functions of your own design.
 
+## Project Structure
+
+The project consists of:
+
+- **uniprot.py** - Main module with functions for ID mapping, metadata fetching, and parsing
+- **test_uniprot.py** - Unit tests covering:
+  - Sequence ID type detection (RefSeq, SGD, UniProt, Ensembl)
+  - FASTA file reading/writing
+  - Isoform parsing from UniProt metadata
+  - Header parsing and sequence ID extraction
+  - Metadata parsing and caching
+- **test_integration.py** - Integration tests requiring network connectivity:
+  - Real API calls to UniProt REST endpoints
+  - ID mapping between different sequence ID types
+  - Metadata fetching and caching validation
+  - Error handling with invalid IDs
+  - *Run separately: `uv run python -m unittest test_integration -v`*
+- **test_seqidtypes.py** - Tests validating ID types against current UniProt API:
+  - Validation of sequence ID type compatibility
+  - Documentation of deprecated field names in _SEQIDTYPE_SCRAPE
+  - API response structure validation
+  - *Requires network: `uv run python -m unittest test_seqidtypes -v`*
+- **example.py** - Example usage demonstrating the module's functionality
+- **example.fasta** - Sample FASTA file for testing
+- **test-isoform/** - Test data directory with UniProt metadata files for isoform testing
+
+## Testing
+
+Run the unit test suite with uv:
+
+    >> uv run python -m unittest test_uniprot -v
+
+For integration tests (requires internet):
+
+    >> uv run python -m unittest test_integration -v
+
+For seqidtype validation (requires internet):
+
+    >> uv run python -m unittest test_seqidtypes -v
+
+Run all tests:
+
+    >> uv run python -m unittest discover -v
+
 ## Changelog
 
 ### 1.3
-- Python 3 compatibility (thanks Nader Moshed)
+- Migrated to Python 3
+- Uses `pyproject.toml` for project configuration
+- Dependency management with [uv](https://docs.astral.sh/uv/)
+- Moved seqidtype functionality into uniprot module as `seqidtype_analyze()` and `seqidtype_cli()`
+- **Test Suite**: Comprehensive test coverage
+  - `test_uniprot.py` - Unit tests for parsing, FASTA I/O, and ID detection
+  - `test_integration.py` - Integration tests with real UniProt API endpoints
+  - `test_seqidtypes.py` - Validation of ID type compatibility against current API
+- **API Update**: Updated to use new UniProt REST API field names (July 2021+)
+  - Old field names (e.g., `P_REFSEQ_AC`, `ENSEMBL_ID`, `ACC`, `ID`) are deprecated
+  - New field names (e.g., `RefSeq_Protein`, `Ensembl`, `UniProtKB_AC-ID`, `UniProtKB`) are now used
+  - Added dynamic validation: code now fetches mapping rules from the API to validate field combinations before requests
+  - Maps to `UniProtKB` destination instead of `UniProtKB_AC-ID` (which is source-only)
 
 ### 1.2
 - changed the cache parameter of `batch_uniprot_id_mapping_pairs` and `batch_uniprot_metadata`  to a directory `cache_dir`

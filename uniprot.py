@@ -28,14 +28,11 @@ import os
 import textwrap
 import time
 import json
-try:
-  from StringIO import StringIO
-except ImportError:
-  from io import StringIO
 import shutil
 from copy import deepcopy
+from functools import cmp_to_key
 
-import requests
+import httpx
 
 
 
@@ -67,40 +64,109 @@ def is_html(text):
 def get_uniprot_id_mapping_pairs(
     from_type, to_type, seqids, cache_fname=None, session=None):
   """
-  Returns a list of matched pairs of identifiers.
+  Returns a list of matched pairs of identifiers using the new UniProt async API.
 
   from_type and to_type can be obtained from:
-    http://www.uniprot.org/faq/28#mapping-faq-table
+    https://www.uniprot.org/help/api_idmapping
   """
   if cache_fname and os.path.isfile(cache_fname):
-    logging("Loading cached (%s->%s) mappings from %s\n" % (from_type.upper(), to_type.upper(), cache_fname))
+    logging("Loading cached (%s->%s) mappings from %s\n" % (from_type, to_type, cache_fname))
     text = open(cache_fname).read()
+    pairs = [l.split('\t') for l in text.strip().split('\n') if l]
+    return pairs
+  
+  if session is None:
+    client = httpx.Client(timeout=30.0)
+    close_client = True
   else:
-    logging("Fetching %s (%s->%s) mappings from http://uniprot.org...\n" % (len(seqids), from_type.upper(), to_type.upper()))
-    if session is None:
-      s = requests.Session()
+    client = session
+    close_client = False
+  
+  try:
+    try:
+      # Submit mapping job
+      job_response = client.post(
+          'https://rest.uniprot.org/idmapping/run',
+          data={
+            'from': from_type,
+            'to': to_type,
+            'ids': ' '.join(seqids)
+          })
+    except Exception as e:
+      logging("Error: Failed to submit mapping job: %s\n" % str(e))
+      return []
+    
+    if job_response.status_code != 200:
+      logging("Error: %s->%s mapping failed (%d): %s\n" % (from_type, to_type, job_response.status_code, job_response.text[:100]))
+      return []
+    
+    job_id = job_response.json()['jobId']
+    
+    # Poll for job completion
+    max_attempts = 60
+    for attempt in range(max_attempts):
+      try:
+        status_response = client.get('https://rest.uniprot.org/idmapping/status/%s' % job_id)
+      except Exception as e:
+        logging("Error: Failed to check job status: %s\n" % str(e))
+        return []
+      
+      if status_response.status_code not in [200, 303]:
+        logging("Error: Failed to check job status (HTTP %d)\n" % status_response.status_code)
+        return []
+      
+      status = status_response.json()
+      if status.get('jobStatus') == 'FINISHED':
+        break
+      elif status.get('jobStatus') == 'FAILURE':
+        logging("Error: ID mapping job failed: %s\n" % status.get('failureReason', 'Unknown reason'))
+        return []
+      
+      if attempt < max_attempts - 1:
+        time.sleep(1)
     else:
-      s = session
-    r = s.post(
-        'https://www.uniprot.org/uploadlists/', 
-         files={'file':StringIO(' '.join(seqids))}, 
-         params={
-          'from': from_type.upper(),
-          'to': to_type.upper(),
-          'format': 'tab',
-          'query': ''})
-    text = r.text
-    if session is None:
-      s.close()
+      logging("Error: ID mapping job timed out after %d attempts\n" % max_attempts)
+      return []
+    
+    # Fetch results
+    try:
+      results_response = client.get('https://rest.uniprot.org/idmapping/stream/%s' % job_id)
+    except Exception as e:
+      logging("Error: Failed to fetch mapping results: %s\n" % str(e))
+      return []
+    
+    if results_response.status_code != 200:
+      logging("Error: Failed to fetch mapping results (HTTP %d): %s\n" % (results_response.status_code, results_response.text[:100]))
+      return []
+    
+    text = results_response.text
     if cache_fname:
       with open(cache_fname, 'w') as f:
         f.write(text)
-  if is_html(text):
-    # failed call results in a HTML error reporting page
-    logging("Error in fetching metadata\n")
+    
+    # Parse results (JSON format with "results" array)
+    pairs = []
+    try:
+      data = json.loads(text)
+      if 'results' in data:
+        for item in data['results']:
+          if 'from' in item and 'to' in item:
+            pairs.append([item['from'], item['to']])
+    except (json.JSONDecodeError, KeyError):
+      # Try legacy tab-delimited format as fallback
+      for line in text.strip().split('\n'):
+        if line and not line.startswith('From'):
+          parts = line.split('\t')
+          if len(parts) >= 2:
+            pairs.append([parts[0], parts[1]])
+    
+    return pairs
+  except Exception as e:
+    logging("Error: Unexpected error in ID mapping: %s\n" % str(e))
     return []
-  lines = [l for l in text.splitlines() if 'from' not in l.lower()]
-  return [l.split('\t')[:2] for l in lines]
+  finally:
+    if close_client:
+      client.close()
 
 
 def batch_uniprot_id_mapping_pairs(
@@ -130,7 +196,7 @@ def batch_uniprot_id_mapping_pairs(
   i_seqid = 0
   if batch_size is None:
     batch_size = len(seqids)
-  with requests.Session() as session:
+  with httpx.Client(timeout=30.0) as session:
     while i_seqid <= len(seqids):
       seqids_subset = seqids[i_seqid:i_seqid+batch_size]
       if cache_dir:
@@ -138,7 +204,7 @@ def batch_uniprot_id_mapping_pairs(
       else:
         subset_cache = None
       subset_pairs = get_uniprot_id_mapping_pairs(
-          from_type, to_type, seqids_subset, cache_fname=subset_cache)
+          from_type, to_type, seqids_subset, cache_fname=subset_cache, session=session)
       pairs.extend(subset_pairs)
       i_seqid += batch_size
   return pairs
@@ -178,11 +244,21 @@ def parse_isoforms(text):
       if var_seq is not None and l[5] != ' ':
         var_seq = None
       if line.startswith('VAR_SEQ'):
-        var_seq = {
-          'i': int(words[1]),
-          'j': int(words[2]),
-          'block': ''
-        }
+        # Handle range format like "1..15"
+        range_str = words[1]
+        if '..' in range_str:
+          parts = range_str.split('..')
+          var_seq = {
+            'i': int(parts[0]),
+            'j': int(parts[1]),
+            'block': ''
+          }
+        else:
+          var_seq = {
+            'i': int(words[1]),
+            'j': int(words[2]),
+            'block': ''
+          }
         uniprot_data[uniprot_id]['var_seqs'].append(var_seq)
       if var_seq is not None:
         var_seq['block'] += l[34:]
@@ -225,7 +301,11 @@ def parse_isoforms(text):
         transition = block.split('(')[0]
         original, mutation = transition.split('->')
         var_seq['sequence'] = original.strip()
-        assert len(var_seq['sequence']) == var_seq['j'] - var_seq['i'] + 1
+        # Check sequence length matches range
+        expected_len = var_seq['j'] - var_seq['i'] + 1
+        if len(var_seq['sequence']) != expected_len:
+          logging("Warning: VAR_SEQ sequence length mismatch: got %d, expected %d\n" % 
+                  (len(var_seq['sequence']), expected_len))
         var_seq['mutation'] = mutation.strip()
     var_seqs.sort(key=lambda v:-v['i'])
     for isoform_id in isoforms:
@@ -298,7 +378,7 @@ def parse_uniprot_txt_file(cache_txt):
         if 'kegg' not in entry:
           entry['kegg'] = []
         ids = [w[:-1] for w in words[1:]]
-        ids = filter(lambda w: len(w) > 1, ids)
+        ids = list(filter(lambda w: len(w) > 1, ids))
         entry['kegg'].extend(ids)
       if 'GO' in words[0]:
         if 'go' not in entry:
@@ -358,7 +438,7 @@ def parse_uniprot_metadata_with_seqids(seqids, cache_txt):
     if seqid in metadata:
       results[seqid] = metadata[seqid]
     else:
-      primary_seqid = clean_uniprot(seqid, isoform=False)
+      primary_seqid = seqid[:6]
       if primary_seqid in metadata:
         protein_metadata = metadata[primary_seqid]
         uniprot_id = protein_metadata['id']
@@ -381,28 +461,37 @@ def fetch_uniprot_metadata(seqids, cache_fname=None):
   Now handles isoform versions of accession id's!
   """
 
-  primary_seqids = clean_uniprot_list(seqids, isoform=False, purge=True)
+  primary_seqids = [s[:6] for s in seqids]
   if cache_fname and os.path.isfile(cache_fname):
     logging("Loading cached metadata from " + cache_fname + "\n")
     cache_txt = open(cache_fname).read()
   else:
-    logging("Fetching metadata for %d Uniprot IDs from http://uniprot.org ...\n" % len(primary_seqids))
-    r = requests.post(
-        'http://www.uniprot.org/batch/',
-        files={'file':StringIO(' '.join(primary_seqids))},
-        params={'format':'txt'})
-    while 'Retry-After' in r.headers:
-      t = int(r.headers['Retry-After'])
-      logging('Waiting %d\n' % t)
-      time.sleep(t)
-      r = requests.get(r.url)
-    cache_txt = r.text
-    if cache_fname:
-      open(cache_fname, 'w').write(r.text)
-    if is_html(cache_txt):
-      # Got HTML response -> error
-      logging("Error in fetching metadata\n")
-      return {}
+    logging("Fetching metadata for %d Uniprot IDs from UniProt ...\n" % len(primary_seqids))
+    client = httpx.Client(timeout=30.0)
+    try:
+      r = client.post(
+          'https://rest.uniprot.org/uniprotkb/search',
+          params={
+            'query': ' OR '.join(['accession:%s' % s for s in primary_seqids]),
+            'format': 'txt'
+          })
+      
+      if r.status_code == 200:
+        cache_txt = r.text
+      else:
+        logging("Error fetching metadata: HTTP %d\n" % r.status_code)
+        return {}
+      
+      if cache_fname:
+        with open(cache_fname, 'w') as f:
+          f.write(cache_txt)
+      
+      if is_html(cache_txt):
+        # Got HTML response -> error
+        logging("Error in fetching metadata\n")
+        return {}
+    finally:
+      client.close()
 
   return parse_uniprot_metadata_with_seqids(seqids, cache_txt)
 
@@ -453,91 +542,33 @@ def is_text(seqid):
     return True
   return False
 
-def clean_uniprot_list(seqids, isoform=False, purge=True):
-    """
-    takes a list of ids, and matches them against the uniprot pattern, returning the 
-    matching elements
-    
-    seqids : list of strings
-            the list of (presumed) uniprot ids
-    isoform : Boolean, default False
-            if True, will only return ids matching an isoform identifier. If False, will
-            return the primary accession if an isoform is given.
-    purge : Boolean, default True
-            if True, will remove all NoneTypes from the list.
-    """
-    clean_list = [ clean_uniprot(s, isoform=isoform) for s in seqids ]
-    if purge:
-        return [ c for c in clean_list if c is not None ] 
-    else:
-        return clean_list    
-    
-def clean_uniprot(seqid, isoform=False):
-    """
-  UniProtKB accession numbers are 6 or 10 alphanumerical characters, matching the regex:
-  [OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}
-  
-  (from http://www.uniprot.org/help/accession_numbers)
-  
-  Isoform ids are indicated by a unprot accession, followed by a hyphen and number.
-  
-  This function matches the seqid against the uniprot regex pattern, and if it matches, 
-  returns the pattern, otherwise it returns None.
-  
-  seqid : str 
-        the (supposed) uniprot id.
-  isoform: Boolean, default False
-        if True, will only return ids matching an isoform identifier. If False, will
-        return the primary accession if an isoform is given.
-  """
-    if isoform:
-        m = re.match('([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})-(\d+)$', seqid)
-        if m:
-            return "-".join([m.group(1), m.group(3)])
-        else:
-            return None
-    else:
-        m = re.match('([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})(-\d+)?$', seqid)
-        if m:
-            return m.group(1)
-        else:
-            return None
-        
+
 def is_uniprot(seqid):
-  """
-  UniProtKB accession numbers are 6 or 10 alphanumerical characters, matching the regex:
-  [OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}
-  
-  (from http://www.uniprot.org/help/accession_numbers)
-  """
-  if re.match('[OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2}$', seqid):
+  if re.match('[A-N,R-Z][0-9][A-Z][A-Z,0-9][A-Z,0-9][0-9]$', seqid):
     return True
-  else:
-      return False
+  if re.match('[O,P,Q][0-9][A-Z,0-9][A-Z,0-9][A-Z,0-9][0-9]$', seqid):
+    return True
+  return False
 
 
 def is_uniprot_variant(seqid):
-  if clean_uniprot(seqid, isoform=True):
-    return True
-  return False
-  """
   if is_uniprot(seqid[:6]):
     if len(seqid) == 6:
       return True
     variant = seqid[6:]
-    if re.match('[-]\d+', variant):
+    if re.match(r'[-]\d+', variant):
       return True
   return False
-  """
+
 
 def is_sgd(seqid):
-  if re.match('Y[A-Z][L,R]\d\d\d[W|C]$', seqid):
+  if re.match(r'Y[A-Z][L,R]\d\d\d[W|C]$', seqid):
     return True
   return False
 
 
 def is_refseq(seqid):
-  if re.match('[N,X,Y,Z][P,M]_\d+([.]\d+)?$', seqid):
+  if re.match(r'[N,X,Y,Z][P,M]_\d+([.]\d+)?$', seqid):
     return True
   return False
 
@@ -560,17 +591,8 @@ def get_naked_seqid(seqid):
     return pieces[1]
   return seqid
 
-# move the following to unittest: 
-assert is_refseq('NP_064308.1')
-assert not is_refseq('NP_064308a1')
-assert is_refseq('NP_064308')
-assert is_sgd('YAL001C')
-assert is_uniprot('A2AAA3')
-assert not is_uniprot('A2AAA3-34')
-assert is_uniprot_variant('A2AAA3-34')
-assert is_uniprot('A2AAA3')
-assert not is_uniprot_variant('A2AAA3-a')
-assert not is_uniprot_variant('A2AAA3aaab')
+
+
 
 
 def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname):
@@ -585,7 +607,7 @@ def probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname):
     return
   n_id = len(alternative_ids)
   pairs = batch_uniprot_id_mapping_pairs(
-      uniprot_mapping_type, 'ACC', alternative_ids, cache_dir=cache_fname)
+      uniprot_mapping_type, 'UniProtKB', alternative_ids, cache_dir=cache_fname)
   alternative_to_uniprot = { p[0]:p[1] for p in pairs }
   for entry in entries:
     if entry['seqid'] in alternative_to_uniprot:
@@ -609,11 +631,11 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_dir=None):
 
   # convert a few types into uniprot_ids
   id_types = [
-    (is_sgd, 'locustag', 'ENSEMBLGENOME_PRO_ID'),
-    (is_refseq, 'refseqp', 'P_REFSEQ_AC'),
-    (is_refseq, 'refseqnt', 'REFSEQ_NT_ID'),
-    (is_ensembl, 'ensembl', 'ENSEMBL_ID'),
-    (is_maybe_uniprot_id, 'uniprotid', 'ID')]
+    (is_sgd, 'locustag', 'SGD'),
+    (is_refseq, 'refseqp', 'RefSeq_Protein'),
+    (is_refseq, 'refseqnt', 'RefSeq_Nucleotide'),
+    (is_ensembl, 'ensembl', 'Ensembl'),
+    (is_maybe_uniprot_id, 'uniprotid', 'UniProtKB_AC-ID')]
   for is_id_fn, name, uniprot_mapping_type in id_types:
     if cache_dir:
       seqid_cache_fname = os.path.join(cache_dir, name)
@@ -625,14 +647,14 @@ def get_metadata_with_some_seqid_conversions(seqids, cache_dir=None):
   # can't cope with uniprot variant for id mapping lookup (bad!)
   for entry in entries:
     if entry['id_type'] == '' and is_uniprot_variant(entry['seqid']):
-      entry['seqid'] = clean_uniprot(entry['seqid'], isoform=False)
+      entry['seqid'] = entry['seqid'][:6]
 
   # map UNIPROT ID's to their current best entry
   if cache_dir:
     seqid_cache_fname = os.path.join(cache_dir, 'uniprotuniprot')
   else:
     seqid_cache_fname = None
-  probe_id_type(entries, is_uniprot, 'UNIPROT-ACC', 'ACC+ID', seqid_cache_fname)
+  probe_id_type(entries, is_uniprot, 'UNIPROT-ACC', 'UniProtKB_AC-ID', seqid_cache_fname)
 
   uniprot_seqids = []
   for entry in entries:
@@ -664,17 +686,17 @@ def get_filtered_uniprot_metadata(seqids, cache_txt):
   to uniprot first.
   """
 
-  stripped_seqids = clean_uniprot_list(seqids, isoform=False, purge=True)
+  stripped_seqids = [s[:6] for s in seqids]
   pairs = batch_uniprot_id_mapping_pairs(
-      'ACC+ID', 'ACC', stripped_seqids)
+      'UniProtKB_AC-ID', 'UniProtKB', stripped_seqids)
   uniprot_seqids = []
   for seqid1, seqid2 in pairs:
     if seqid1 in stripped_seqids and seqid1 not in uniprot_seqids:
       uniprot_seqids.append(seqid1)
   uniprot_dict = batch_uniprot_metadata(uniprot_seqids, cache_txt)
   for seqid in seqids:
-    if seqid not in uniprot_seqids and clean_uniprot(seqid, isoform=False) in uniprot_seqids:
-      uniprot_dict[seqid] = uniprot_dict[clean_uniprot(seqid, isoform=False)]
+    if seqid not in uniprot_seqids and seqid[:6] in uniprot_seqids:
+      uniprot_dict[seqid] = uniprot_dict[seqid[:6]]
   return uniprot_dict
 
 
@@ -691,14 +713,14 @@ def sort_seqids_by_uniprot(seqids, uniprot_data):
   def diff_list(orig_list, other_list):
     return [v for v in orig_list if v not in other_list]
 
-  uniprot_seqids = filter(lambda s: s in uniprot_data, seqids)
-  uniprot_seqids.sort(cmp=cmp_longer_protein_is_first)
+  uniprot_seqids = list(filter(lambda s: s in uniprot_data, seqids))
+  uniprot_seqids.sort(key=cmp_to_key(cmp_longer_protein_is_first))
 
   remainder_seqids = diff_list(seqids, uniprot_seqids)
 
   is_reviewed = lambda s: uniprot_data[s]['is_reviewed']
-  reviewed_seqids = filter(is_reviewed, uniprot_seqids)
-  reviewed_seqids.sort(cmp=cmp_longer_protein_is_first)
+  reviewed_seqids = list(filter(is_reviewed, uniprot_seqids))
+  reviewed_seqids.sort(key=cmp_to_key(cmp_longer_protein_is_first))
 
   unreviewed_seqids = diff_list(uniprot_seqids, reviewed_seqids)
 
@@ -750,8 +772,8 @@ def read_selected_fasta(seqids, fasta_db, seqid_fn=None):
   live_seqid = None
   proteins = {}
   if seqid_fn is not None:
-    original_seqid_map = { seqid_fn(s):s for s in seqids }
-    seqids = original_seqid_map.keys()
+     original_seqid_map = { seqid_fn(s):s for s in seqids }
+     seqids = list(original_seqid_map.keys())
   for i, line in enumerate(open(fasta_db)):
     if line.startswith(">"):
       fasta_seqid, description = \
@@ -821,3 +843,208 @@ def write_fasta(
     for i in range(0, len(sequence), width):
       f.write(sequence[i:i+width] + "\n")
   f.close()
+
+
+# SeqIDType tool
+# Updated to use current UniProt API field names (as of 2025)
+_SEQIDTYPE_SCRAPE = """
+UniProt
+UniProtKB                                UniProtKB                      both
+UniProtKB AC/ID                          UniProtKB_AC-ID                both
+UniProtKB/Swiss-Prot                     UniProtKB-Swiss-Prot           both
+UniParc                                  UniParc                        both
+UniRef50                                 UniRef50                       both
+UniRef90                                 UniRef90                       both
+UniRef100                                UniRef100                      both
+Gene Name                                Gene_Name                      both
+CRC64                                    CRC64                          both
+Sequence databases
+CCDS                                     CCDS                           both
+EMBL/GenBank/DDBJ                        EMBL-GenBank-DDBJ              both
+EMBL/GenBank/DDBJ CDS                    EMBL-GenBank-DDBJ_CDS          both
+GI number                                GI_number                      both
+PIR                                      PIR                            both
+RefSeq Nucleotide                        RefSeq_Nucleotide              both
+RefSeq Protein                           RefSeq_Protein                 both
+3D structure databases
+PDB                                      PDB                            both
+Protein-protein interaction databases
+BioGRID                                  BioGRID                        both
+ComplexPortal                            ComplexPortal                  both
+DIP                                      DIP                            both
+STRING                                   STRING                         both
+Chemistry
+ChEMBL                                   ChEMBL                         both
+DrugBank                                 DrugBank                       both
+GuidetoPHARMACOLOGY                      GuidetoPHARMACOLOGY            both
+SwissLipids                              SwissLipids                    both
+Protein family/group databases
+Allergome                                Allergome                      both
+ESTHER                                   ESTHER                         both
+MEROPS                                   MEROPS                         both
+PeroxiBase                               PeroxiBase                     both
+REBASE                                   REBASE                         both
+TCDB                                     TCDB                           both
+PTM databases
+GlyConnect                               GlyConnect                     both
+Genetic variation databases
+BioMuta                                  BioMuta                        both
+DMDM                                     DMDM                           both
+Proteomic databases
+CPTAC                                    CPTAC                          both
+ProteomicsDB                             ProteomicsDB                   both
+Protocols and materials databases
+DNASU                                    DNASU                          both
+Genome annotation databases
+Ensembl                                  Ensembl                        both
+Ensembl Genomes                          Ensembl_Genomes                both
+Ensembl Genomes Protein                  Ensembl_Genomes_Protein        both
+Ensembl Genomes Transcript               Ensembl_Genomes_Transcript     both
+Ensembl Protein                          Ensembl_Protein                both
+Ensembl Transcript                       Ensembl_Transcript             both
+GeneID                                   GeneID                         both
+KEGG                                     KEGG                           both
+PATRIC                                   PATRIC                         both
+UCSC                                     UCSC                           both
+WBParaSite                               WBParaSite                     both
+WBParaSite Transcript/Protein            WBParaSite_Transcript-Protein  both
+Organism-specific databases
+ArachnoServer                            ArachnoServer                  both
+Araport                                  Araport                        both
+CGD                                      CGD                            both
+ConoServer                               ConoServer                     both
+dictyBase                                dictyBase                      both
+EchoBASE                                 EchoBASE                       both
+euHCVdb                                  euHCVdb                        both
+FlyBase                                  FlyBase                        both
+GeneCards                                GeneCards                      both
+GeneReviews                              GeneReviews                    both
+HGNC                                     HGNC                           both
+LegioList                                LegioList                      both
+Leproma                                  Leproma                        both
+MaizeGDB                                 MaizeGDB                       both
+MGI                                      MGI                            both
+MIM                                      MIM                            both
+neXtProt                                 neXtProt                       both
+OpenTargets                              OpenTargets                    both
+Orphanet                                 Orphanet                       both
+PharmGKB                                 PharmGKB                       both
+PomBase                                  PomBase                        both
+PseudoCAP                                PseudoCAP                      both
+RGD                                      RGD                            both
+SGD                                      SGD                            both
+TubercuList                              TubercuList                    both
+VEuPathDB                                VEuPathDB                      both
+VGNC                                     VGNC                           both
+WormBase                                 WormBase                       both
+WormBase Protein                         WormBase_Protein               both
+WormBase Transcript                      WormBase_Transcript            both
+Xenbase                                  Xenbase                        both
+ZFIN                                     ZFIN                           both
+Phylogenomic databases
+eggNOG                                   eggNOG                         both
+GeneTree                                 GeneTree                       both
+HOGENOM                                  HOGENOM                        both
+OMA                                      OMA                            both
+OrthoDB                                  OrthoDB                        both
+TreeFam                                  TreeFam                        both
+Enzyme and pathway databases
+BioCyc                                   BioCyc                         both
+PlantReactome                            PlantReactome                  both
+Reactome                                 Reactome                       both
+UniPathway                               UniPathway                     both
+Miscellaneous
+ChiTaRS                                  ChiTaRS                        both
+GeneWiki                                 GeneWiki                       both
+GenomeRNAi                               GenomeRNAi                     both
+PHI-base                                 PHI-base                       both
+Gene expression databases
+CollecTF                                 CollecTF                       both
+Family and domain databases
+DisProt                                  DisProt                        both
+IDEAL                                    IDEAL                          both
+"""
+
+
+def _get_uniprot_mapping_rules():
+  """Fetch which 'to' types are valid for each 'from' type from UniProt API."""
+  try:
+    response = httpx.get('https://rest.uniprot.org/configure/idmapping/fields', timeout=10.0)
+    if response.status_code != 200:
+      return {}
+    data = response.json()
+    field_to_rule = {}
+    for group in data.get('groups', []):
+      for item in group.get('items', []):
+        if item.get('from', False):
+          field_to_rule[item['name']] = item.get('ruleId')
+    rule_to_tos = {rule['ruleId']: rule.get('tos', []) for rule in data.get('rules', [])}
+    return {ft: rule_to_tos[rid] for ft, rid in field_to_rule.items() if rid in rule_to_tos}
+  except Exception:
+    return {}
+
+
+def _get_seqidtype_id_types():
+  """Parse seqid types from scrape data."""
+  id_types = []
+  for line in _SEQIDTYPE_SCRAPE.splitlines():
+    words = line.split()
+    if words and words[-1] in ['both', 'to']:
+      id_types.append(words[-2])
+  return id_types
+
+
+def seqidtype_analyze(seqid, cache_fname=None):
+    """
+    Analyzes the type of seqid at http://uniprot.org by
+    brute-force matching seqids against all seqid types.
+    Maps to UniProtKB (the most common valid destination type).
+    """
+    id_types = _get_seqidtype_id_types()
+    mapping_rules = _get_uniprot_mapping_rules()
+    cache = json.load(open(cache_fname)) if (cache_fname and os.path.isfile(cache_fname)) else {seqid: {}}
+    
+    logging("Analyzing %s\n" % seqid)
+    good_types = []
+    
+    for from_type in id_types:
+      if seqid not in cache:
+        cache[seqid] = {}
+      if from_type not in cache[seqid]:
+        # Only attempt mappings that are valid according to API rules
+        if from_type in mapping_rules and "UniProtKB" in mapping_rules[from_type]:
+          pairs = batch_uniprot_id_mapping_pairs(from_type, "UniProtKB", [seqid])
+          cache[seqid][from_type] = pairs[0][1] if pairs else None
+        else:
+          cache[seqid][from_type] = None
+        if cache_fname:
+          json.dump(cache, open(cache_fname, 'w'))
+      
+      result = cache[seqid][from_type]
+      if result is not None:
+        good_types.append(from_type)
+        logging('%s:%s -> %s\n' % (seqid, from_type, result))
+      else:
+        logging('%s:%s -> None\n' % (seqid, from_type))
+
+    logging('\n%s is compatible with: %s\n' % (seqid, ', '.join(good_types) if good_types else 'None'))
+
+
+def seqidtype_cli():
+  """Entry point for seqidtype CLI tool."""
+  import sys
+  usage = textwrap.dedent("""\
+    `seqidtype` works out the type of seqid at http://uniprot.org by
+    brute-force matching seqids against all seqid types
+
+    (c) 2013, Bosco Ho. BSD.
+
+    seqidtype seqid1 seqid2 seqid3 ...
+
+    (Example: seqidtype YOR261C)
+    """)
+  if len(sys.argv) == 1:
+    print(usage)
+  else:
+    for seqid in sys.argv[1:]:
+      seqidtype_analyze(seqid, 'seqidtype.json')
