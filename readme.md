@@ -12,15 +12,18 @@
 
 ## Installation
 
-This project uses [uv](https://docs.astral.sh/uv/). To install the package and its dependencies:
+`uniprot` is available as a PyPI library:
+
+    >> pip install uniprot
+
+or
+
+    >> uv add uniprot
+
+If you want to run from a local copy, download the package and sync dependencies:
 
     >> uv sync
-
-To run Python code with the correct environment:
-
     >> uv run python your_script.py
-
-The package requires `httpx` as a dependency.
 
 ## Examples
 
