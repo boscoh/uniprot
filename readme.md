@@ -14,79 +14,103 @@
 
 `uniprot` is available as a PyPI library:
 
-    >> pip install uniprot
+```bash
+pip install uniprot
+```
 
 or
 
-    >> uv add uniprot
+```bash
+uv add uniprot
+```
 
 If you want to run from a local copy, download the package and sync dependencies:
 
-    >> uv sync
-    >> uv run python your_script.py
+```bash
+uv sync
+uv run python your_script.py
+```
 
 ## Examples
 
 Before you run any of the examples, import the module:
 
-    import uniprot
+```python
+import uniprot
+```
 
 It's super useful to import the pprint function to interrogate the data structures that the functions are returning:
 
-    import pprint
+```python
+import pprint
+```
 
 A convenience function is provided to read seqids and sequences from a fasta file:
 
-    seqids, fastas = uniprot.read_fasta('example.fasta')
+```python
+seqids, fastas = uniprot.read_fasta('example.fasta')
+```
 
 
 ### Fetch seqid mappings
 
 UniProt.org provides a seqid mapping service, but you must specify the seqid types, which are listed at <https://www.uniprot.org/help/id_mapping>. In this example, we have some RefSeq seqid's (RefSeq_Protein) that we want to map to UniProtKB identifiers:
 
-    seqids = "NP_000508.1  NP_001018081.3".split()
+```python
+seqids = "NP_000508.1  NP_001018081.3".split()
 
-    pairs = uniprot.batch_uniprot_id_mapping_pairs(
-      'RefSeq_Protein', 'UniProtKB', seqids)
+pairs = uniprot.batch_uniprot_id_mapping_pairs(
+  'RefSeq_Protein', 'UniProtKB', seqids)
 
-    pprint.pprint(pairs, indent=2)
+pprint.pprint(pairs, indent=2)
+```
 
 
 ### Getting protein sequence metadata
 
 To get metadata for sequences, we need to have a list of seqids in the Uniprot Accesion or Uniprot ID format. To get the metadata:
 
-    uniprot_seqids = 'A0QSU3 D9QCH6 A0QL36'.split()
-    uniprot_data = uniprot.batch_uniprot_metadata(
-        uniprot_seqids, 'cache')
-    pprint.pprint(mapping, indent=2)
+```python
+uniprot_seqids = 'A0QSU3 D9QCH6 A0QL36'.split()
+uniprot_data = uniprot.batch_uniprot_metadata(
+    uniprot_seqids, 'cache')
+pprint.pprint(mapping, indent=2)
+```
 
 The function `batch_uniprot_metadata` contains a simple parser that extracts a small number of fields into a Python dictionary, with the Uniprot ID as the dictionary key. The results are obtained though batched queries to http://uniprot.org over several calls. An optional directory `cache` refers to a directory that stores cached results in case of interruption. You can carry further analysis on the `uniprot_data` dictionary. For example, you can write the sequences to a `.fasta` file using the convenience
 function:
 
-    uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
+```python
+uniprot.write_fasta('output.fasta', uniprot_data, uniprot_seqids)
+```
 
 If you would rather parse the metadata text yourself, you can refer to the raw text that was cached in the `cache/metadata.*.txt` files:
 
-    for l in open('cache/metadata.0.txt'):
-      print l
+```python
+for l in open('cache/metadata.0.txt'):
+  print l
+```
 
 ### Sorting seqids to find a good representative
 
 Sometimes you will have a bunch of seqids that are related. For further analysis, you might just want pick the best one with the most useful uniprot information - for instance, the one that is the longest and that has also been reviewed (manually curated). 
 
 A function `sort_seqids_by_uniprot` does just that. Let's say we have `uniprot_seqids` and `uniprot_data` from before. Then to find the most useful representative:
- 
-    sorted_seqids = uniprot.sort_seqids_by_uniprot(uniprot_seqids, uniprot_data)
-    best_seqid = sorted_seqids[0]
+
+```python
+sorted_seqids = uniprot.sort_seqids_by_uniprot(uniprot_seqids, uniprot_data)
+best_seqid = sorted_seqids[0]
+```
 
 ### Extracting isoform sequences
 
 The Uniprot metadata contains information for the known isoforms of a protein, but this is expressed rather awkwardly as VAR_SEQ entries. Here is a function that reconstructs the isoform sequences from the raw metadata text:
-  
-    text = open('cache/metadata.0.txt').read()
-    isoforms_dict = uniprot.parse_isoforms(text)
-    pprint.pprint(isoforms_dict)
+
+```python
+text = open('cache/metadata.0.txt').read()
+isoforms_dict = uniprot.parse_isoforms(text)
+pprint.pprint(isoforms_dict)
+```
 
 
 ### Brute-force seqid-type matching
@@ -95,43 +119,54 @@ Unfortunately, you probably have been given some files where you can't recognize
 
 Never fear! The `seqidtype_analyze()` function uses a brute-force approach to figure out the id type of a bunch of seqids. You can use it programmatically:
 
-    uniprot.seqidtype_analyze('YP_885981.1', cache_fname='seqidtype.json')
+```python
+uniprot.seqidtype_analyze('YP_885981.1', cache_fname='seqidtype.json')
+```
 
 Or run it as a command-line tool:
 
-    >> uv run seqidtype YP_885981.1
+```bash
+uv run seqidtype YP_885981.1
+```
 
 `seqidtype_analyze()` will attempt to map a seqid against all the seqid types listed in <https://www.uniprot.org/help/id_mapping>. After running through all ~100 seqid types, you will get a list of working seqid types, which should look something like:
 
-    Analyzing YP_885981.1
-    YP_885981.1:UniProtKB -> None
-    YP_885981.1:UniProtKB_AC-ID -> None
-    YP_885981.1:RefSeq_Protein -> A0QSU3
-    YP_885981.1 is compatible with: RefSeq_Protein
+```
+Analyzing YP_885981.1
+YP_885981.1:UniProtKB -> None
+YP_885981.1:UniProtKB_AC-ID -> None
+YP_885981.1:RefSeq_Protein -> A0QSU3
+YP_885981.1 is compatible with: RefSeq_Protein
+```
 
 Since this requires lots of http requests, to avoid lost work, the intermediate results are cached in the current directory under `seqidtype.json`, which can be safely deleted. Once you have obtained the seqid type, you can map your seqids to the UniProtKB seqid type:
 
-    pairs = uniprot.batch_uniprot_id_mapping_pairs(
-      'RefSeq_Protein', 'UniProtKB', seqids)
+```python
+pairs = uniprot.batch_uniprot_id_mapping_pairs(
+  'RefSeq_Protein', 'UniProtKB', seqids)
+```
 
 ## Chaining calls
 
 Let's say you have a bunch of seqids of several different types. By chaining a bunch of calls to `uniprot.py`, you can construct a master function that fetches metadata for your seqids all in one go. Included is a function that can fetch metadata for ENSEMBL, REFSEQ and UNIPROT seqids:
 
-    metadata = uniprot.get_metadata_with_some_seqid_conversions(
-         seqids, 'cache')
+```python
+metadata = uniprot.get_metadata_with_some_seqid_conversions(
+     seqids, 'cache')
+```
 
 The heart of the function `get_metadata_with_some_seqid_conversions` uses pattern matching functions, such as `is_ensembl` to identify ENSEMBL ids, as can be seen in this fragment:
 
-    # convert a few types into uniprot_ids
-    id_types = [
-      (is_sgd, 'locustag', 'SGD'),
-      (is_refseq, 'refseqp', 'RefSeq_Protein'),
-      (is_refseq, 'refseqnt', 'RefSeq_Nucleotide'),
-      (is_ensembl, 'ensembl', 'Ensembl'),
-      (is_maybe_uniprot_id, 'uniprotid', 'UniProtKB_AC-ID')]
-    for is_id_fn, name, uniprot_mapping_type in id_types:
-      probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname+'.'+name)
+```python
+id_types = [
+  (is_sgd, 'locustag', 'SGD'),
+  (is_refseq, 'refseqp', 'RefSeq_Protein'),
+  (is_refseq, 'refseqnt', 'RefSeq_Nucleotide'),
+  (is_ensembl, 'ensembl', 'Ensembl'),
+  (is_maybe_uniprot_id, 'uniprotid', 'UniProtKB_AC-ID')]
+for is_id_fn, name, uniprot_mapping_type in id_types:
+  probe_id_type(entries, is_id_fn, name, uniprot_mapping_type, cache_fname+'.'+name)
+```
 
 The metadata is then returned as a dictionary with the original seqids as keys. You can follow the logic in this function to construct functions of your own design.
 
@@ -165,25 +200,32 @@ The project consists of:
 
 Run the unit test suite with uv:
 
-    >> uv run python -m unittest test_uniprot -v
+```bash
+uv run python -m unittest test_uniprot -v
+```
 
 For integration tests (requires internet):
 
-    >> uv run python -m unittest test_integration -v
+```bash
+uv run python -m unittest test_integration -v
+```
 
 For seqidtype validation (requires internet):
 
-    >> uv run python -m unittest test_seqidtypes -v
+```bash
+uv run python -m unittest test_seqidtypes -v
+```
 
 Run all tests:
 
-    >> uv run python -m unittest discover -v
+```bash
+uv run python -m unittest discover -v
+```
 
 ## Changelog
 
 ### 1.4 (January 4, 2026)
 - version bump to 1.4 - update changelog with dates and contributor credits
-- Migrated to Python 3
 - Uses `pyproject.toml` for project configuration
 - Dependency management with [uv](https://docs.astral.sh/uv/)
 - Moved seqidtype functionality into uniprot module as `seqidtype_analyze()` and `seqidtype_cli()`
